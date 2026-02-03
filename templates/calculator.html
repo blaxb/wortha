@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card">
+  <h2>Free Pricing Calculator</h2>
+  <p>Estimate a fair sponsorship range using a simple CPM-based model.</p>
+  <form class="form" action="/calculator" method="post">
+    <label>Platform
+      <select name="platform" required>
+        <option value="">Select one</option>
+        <option {% if platform == "YouTube" %}selected{% endif %}>YouTube</option>
+        <option {% if platform == "Instagram" %}selected{% endif %}>Instagram</option>
+        <option {% if platform == "TikTok" %}selected{% endif %}>TikTok</option>
+        <option {% if platform == "LinkedIn" %}selected{% endif %}>LinkedIn</option>
+        <option {% if platform == "Other" %}selected{% endif %}>Other</option>
+      </select>
+    </label>
+    <label>Niche (e.g., Finance, Fitness, Beauty)
+      <input type="text" name="niche" placeholder="Fitness" value="{{ niche or '' }}" required />
+    </label>
+    <label>Deal type (e.g., Dedicated video, Product integration)
+      <input type="text" name="deal_type" placeholder="Product integration" value="{{ deal_type or '' }}" required />
+    </label>
+    <label>Follower count
+      <input type="number" name="followers" placeholder="25000" value="{{ followers or '' }}" />
+    </label>
+    <label>Average views
+      <input type="number" name="avg_views" placeholder="12000" value="{{ avg_views or '' }}" />
+    </label>
+    <label>Engagement rate (%)
+      <input type="number" step="0.01" name="engagement_rate" placeholder="3.5" value="{{ engagement_rate or '' }}" />
+    </label>
+    <label>Geo region
+      <input type="text" name="geo_region" placeholder="US" value="{{ geo_region or 'US' }}" />
+    </label>
+    <button class="btn" type="submit">Calculate my rate</button>
+  </form>
+</section>
+
+{% if limit_reached %}
+  <section class="card">
+    <h3>Free Tier Limit Reached</h3>
+    <p>{{ message }}</p>
+    <a class="btn" href="/upgrade">Upgrade to Pro</a>
+  </section>
+{% elif result %}
+  <section class="card">
+    <h3>Recommended Price Range</h3>
+    <p>Based on your metrics, we recommend charging <strong>${{ '%.2f'|format(result.recommended_min) }}</strong> – <strong>${{ '%.2f'|format(result.recommended_max) }}</strong> for this deal.</p>
+  </section>
+  <section class="card">
+    <h3>How we calculated this</h3>
+    <ul>
+      <li>Base CPM for {{ platform }}: ${{ '%.2f'|format(result.base_cpm) }}</li>
+      <li>Niche multiplier: {{ '%.2f'|format(result.niche_multiplier) }}x</li>
+      <li>Engagement multiplier: {{ '%.2f'|format(result.engagement_multiplier) }}x</li>
+      <li>Geo multiplier: {{ '%.2f'|format(result.geo_multiplier) }}x</li>
+      <li>Effective CPM: ${{ '%.2f'|format(result.effective_cpm) }}</li>
+    </ul>
+  </section>
+{% endif %}
+{% endblock %}

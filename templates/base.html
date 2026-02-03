@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wortha</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X0772L8XF3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-X0772L8XF3');
+  </script>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="/">Wortha</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        {% if user %}
+          <a href="/dashboard">Dashboard</a>
+          <form action="/logout" method="post" class="logout-form">
+            <button type="submit">Log out</button>
+          </form>
+        {% else %}
+          <a href="/login">Log in</a>
+          <a href="/signup" class="btn">Sign up</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

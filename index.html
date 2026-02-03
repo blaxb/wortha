@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wortha — Sponsorship Pricing for Creators</title>
   <meta name="description" content="Wortha helps creators price sponsorships using real benchmarks, not guesswork." />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
   <style>
     :root {
       --bg: #f7f6f2;
@@ -270,6 +277,12 @@
     .note {
       margin-top: 18px;
       font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .form-note {
+      margin-top: 14px;
+      font-size: 0.9rem;
       color: var(--muted);
     }
 
@@ -554,7 +567,7 @@
         <h2 class="section-title">Join the Wortha Waitlist</h2>
         <p class="section-subtitle">Be one of the first creators to get access — and lock in founding pricing.</p>
         <div class="form-wrap">
-          <form action="#" method="post">
+          <form action="FORM_ENDPOINT_URL_HERE" method="POST">
             <div>
               <label for="name">Name</label>
               <input id="name" name="name" type="text" placeholder="Your name" required />
@@ -565,7 +578,7 @@
             </div>
             <div>
               <label for="platform">Primary platform</label>
-              <select id="platform" name="platform" required>
+              <select id="platform" name="platform">
                 <option value="">Select one</option>
                 <option>TikTok</option>
                 <option>YouTube</option>
@@ -575,11 +588,11 @@
             </div>
             <div>
               <label for="followers">Follower count</label>
-              <input id="followers" name="followers" type="text" placeholder="e.g., 24,500" required />
+              <input id="followers" name="followers" type="text" placeholder="e.g., 24,500" />
             </div>
             <button class="btn" type="submit">Join as a Founding Creator</button>
           </form>
-          <p class="note">No spam. We’ll only email you about Wortha and early access.</p>
+          <p class="form-note">No spam. We’ll only email you about Wortha and early access.</p>
         </div>
       </div>
     </section>

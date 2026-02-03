@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card">
+  <h2>Welcome, {{ user.username }}</h2>
+  <p>Your pricing workspace is ready.</p>
+  <a class="btn" href="/calculator">Open Free Pricing Calculator</a>
+</section>
+{% endblock %}
