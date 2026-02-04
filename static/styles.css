@@ -530,12 +530,6 @@ tr:hover {
   color: var(--color-primary);
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1.5rem;
-}
-
 .dashboard-tile {
   display: flex;
   flex-direction: column;
