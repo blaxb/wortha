@@ -1,185 +1,183 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-  <div class="page-header">
-    <h2>AI Negotiation Assistant</h2>
-    <p>Paste the brand’s offer and we’ll tell you if it’s lowball and how to counter.</p>
-    <span class="badge">Plan: {{ user.plan|capitalize }} (Premium feature)</span>
-  </div>
-
-  <form class="form" method="post" action="/negotiation">
-    <div class="grid grid-2">
-      <div class="stack">
-        <section class="card">
-          <h3>Offer details</h3>
-          <div class="form-group">
-            <label>Brand name</label>
-            <input type="text" name="brand_name" value="{{ (result.brand_name if result else '') }}" required />
-          </div>
-          <div class="form-group">
-            <label>Deal type</label>
-            {% set deal_type_value = form_data.get('deal_type', result.deal_type if result else '') %}
-            <select name="deal_type">
-              <option value="">Select one</option>
-              {% for value, label in DEAL_TYPES %}
-                <option value="{{ value }}" {% if deal_type_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Other deal type (optional)</label>
-            <input type="text" name="deal_type_other" value="{{ form_data.get('deal_type_other', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Content format</label>
-            {% set content_value = form_data.get('content_format', result.content_format if result else '') %}
-            <select name="content_format">
-              <option value="">Select one</option>
-              {% for value, label in CONTENT_FORMATS %}
-                <option value="{{ value }}" {% if content_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Other content format (optional)</label>
-            <input type="text" name="content_format_other" value="{{ form_data.get('content_format_other', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Brand offer (USD)</label>
-            <input type="number" step="0.01" name="brand_offer" value="{{ (result.brand_offer if result else '') }}" required />
-          </div>
-        </section>
-
-        <section class="card">
-          <h3>Your metrics</h3>
-          {% set platform_value = form_data.get('platform', result.platform if result else (profile.primary_platform if profile else '')) %}
-          {% set niche_value = form_data.get('niche', result.niche if result else (profile.niche if profile else '')) %}
-          {% set followers_value = form_data.get('followers', result.followers if result else (profile.followers if profile else '')) %}
-          {% set avg_views_value = form_data.get('avg_views', result.avg_views if result else (profile.avg_views if profile else '')) %}
-          {% set engagement_value = form_data.get('engagement_rate', result.engagement_rate if result else (profile.engagement_rate if profile else '')) %}
-          {% set geo_value = form_data.get('geo_region', result.geo_region if result else (profile.audience_location if profile else 'us')) %}
-
-          <div class="form-group">
-            <label>Platform</label>
-            <select name="platform" required>
-              <option value="">Select one</option>
-              {% for value, label in PLATFORMS %}
-                <option value="{{ value }}" {% if platform_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Niche</label>
-            <select name="niche">
-              <option value="">Select one</option>
-              {% for value, label in NICHES %}
-                <option value="{{ value }}" {% if niche_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Followers</label>
-              <input type="number" name="followers" value="{{ followers_value }}" />
-            </div>
-            <div class="form-group">
-              <label>Average views</label>
-              <input type="number" name="avg_views" value="{{ avg_views_value }}" />
-            </div>
-            <div class="form-group">
-              <label>Engagement rate (%)</label>
-              <input type="number" step="0.01" name="engagement_rate" value="{{ engagement_value }}" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Geo region</label>
-            <select name="geo_region">
-              <option value="">Select one</option>
-              {% for value, label in GEO_REGIONS %}
-                <option value="{{ value }}" {% if geo_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </section>
-
-        <section class="card">
-          <button class="btn btn-primary" type="submit">Evaluate offer</button>
-        </section>
-      </div>
-
-      <div class="stack">
-        {% if result %}
-          <section class="card">
-            <h3>Assessment</h3>
-            <p>Offer from {{ result.brand_name or 'this brand' }}: <strong>${{ result.brand_offer | round(0) }}</strong></p>
-            <p>Estimated fair market range: <strong>${{ result.market_min | round(0) }}</strong> – <strong>${{ result.market_max | round(0) }}</strong></p>
-            {% if result.offer_vs_market_pct is not none %}
-              <p>Offer vs market: <strong>{{ result.offer_vs_market_pct | round(1) }}%</strong></p>
-            {% endif %}
-            {% if result.assessment_text %}
-              <div class="notice">{{ result.assessment_text }}</div>
-            {% endif %}
-            {% if result.recommended_counter_min is not none and result.recommended_counter_max is not none %}
-              <p>Recommended counter range: <strong>${{ result.recommended_counter_min | round(0) }}</strong> – <strong>${{ result.recommended_counter_max | round(0) }}</strong></p>
-            {% endif %}
-          </section>
-
-          <section class="card">
-            <h3>Email to brand</h3>
-            <div class="form-group">
-              <label>Subject</label>
-              <input type="text" value="{{ result.email_subject }}" readonly />
-            </div>
-            <div class="form-group">
-              <label>Body</label>
-              <textarea rows="8" readonly>{{ result.email_body }}</textarea>
-            </div>
-          </section>
-        {% else %}
-          <section class="card">
-            <h3>Results</h3>
-            <p class="muted">Submit an offer to see your market range and recommended counter.</p>
-          </section>
-        {% endif %}
-      </div>
-    </div>
-  </form>
-
-  {% if recent_negotiations %}
-    <section class="card">
-      <h3>Recent negotiations</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Brand</th>
-              <th>Offer</th>
-              <th>Market range</th>
-              <th>Offer vs market</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in recent_negotiations %}
-              <tr>
-                <td>{{ item.brand_name or 'Brand' }}</td>
-                <td>${{ item.brand_offer | round(0) }}</td>
-                <td>${{ item.market_min | round(0) }} – ${{ item.market_max | round(0) }}</td>
-                <td>
-                  {% if item.offer_vs_market_pct is not none %}
-                    {{ item.offer_vs_market_pct | round(1) }}%
-                  {% else %}
-                    —
-                  {% endif %}
-                </td>
-                <td>{{ item.created_at.strftime(\"%b %d, %Y\") if item.created_at else \"\" }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  {% endif %}
+<div class="page-header">
+  <h2>AI Negotiation Assistant</h2>
+  <p>Paste the brand’s offer and we’ll tell you if it’s lowball and how to counter.</p>
+  <span class="badge">Plan: {{ user.plan|capitalize }} (Premium feature)</span>
 </div>
+
+<form class="form" method="post" action="/negotiation">
+  <div class="grid-two">
+    <div class="stack">
+      <section class="card">
+        <h3>Offer details</h3>
+        <div class="form-group">
+          <label>Brand name</label>
+          <input type="text" name="brand_name" value="{{ (result.brand_name if result else '') }}" required />
+        </div>
+        <div class="form-group">
+          <label>Deal type</label>
+          {% set deal_type_value = form_data.get('deal_type', result.deal_type if result else '') %}
+          <select name="deal_type">
+            <option value="">Select one</option>
+            {% for value, label in DEAL_TYPES %}
+              <option value="{{ value }}" {% if deal_type_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Other deal type (optional)</label>
+          <input type="text" name="deal_type_other" value="{{ form_data.get('deal_type_other', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Content format</label>
+          {% set content_value = form_data.get('content_format', result.content_format if result else '') %}
+          <select name="content_format">
+            <option value="">Select one</option>
+            {% for value, label in CONTENT_FORMATS %}
+              <option value="{{ value }}" {% if content_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Other content format (optional)</label>
+          <input type="text" name="content_format_other" value="{{ form_data.get('content_format_other', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Brand offer (USD)</label>
+          <input type="number" step="0.01" name="brand_offer" value="{{ (result.brand_offer if result else '') }}" required />
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Your metrics</h3>
+        {% set platform_value = form_data.get('platform', result.platform if result else (profile.primary_platform if profile else '')) %}
+        {% set niche_value = form_data.get('niche', result.niche if result else (profile.niche if profile else '')) %}
+        {% set followers_value = form_data.get('followers', result.followers if result else (profile.followers if profile else '')) %}
+        {% set avg_views_value = form_data.get('avg_views', result.avg_views if result else (profile.avg_views if profile else '')) %}
+        {% set engagement_value = form_data.get('engagement_rate', result.engagement_rate if result else (profile.engagement_rate if profile else '')) %}
+        {% set geo_value = form_data.get('geo_region', result.geo_region if result else (profile.audience_location if profile else 'us')) %}
+
+        <div class="form-group">
+          <label>Platform</label>
+          <select name="platform" required>
+            <option value="">Select one</option>
+            {% for value, label in PLATFORMS %}
+              <option value="{{ value }}" {% if platform_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Niche</label>
+          <select name="niche">
+            <option value="">Select one</option>
+            {% for value, label in NICHES %}
+              <option value="{{ value }}" {% if niche_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Followers</label>
+            <input type="number" name="followers" value="{{ followers_value }}" />
+          </div>
+          <div class="form-group">
+            <label>Average views</label>
+            <input type="number" name="avg_views" value="{{ avg_views_value }}" />
+          </div>
+          <div class="form-group">
+            <label>Engagement rate (%)</label>
+            <input type="number" step="0.01" name="engagement_rate" value="{{ engagement_value }}" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Geo region</label>
+          <select name="geo_region">
+            <option value="">Select one</option>
+            {% for value, label in GEO_REGIONS %}
+              <option value="{{ value }}" {% if geo_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </section>
+
+      <section class="card">
+        <button class="btn btn-primary" type="submit">Evaluate offer</button>
+      </section>
+    </div>
+
+    <div class="stack">
+      {% if result %}
+        <section class="card">
+          <h3>Assessment</h3>
+          <p>Offer from {{ result.brand_name or 'this brand' }}: <strong>${{ result.brand_offer | round(0) }}</strong></p>
+          <p>Estimated fair market range: <strong>${{ result.market_min | round(0) }}</strong> – <strong>${{ result.market_max | round(0) }}</strong></p>
+          {% if result.offer_vs_market_pct is not none %}
+            <p>Offer vs market: <strong>{{ result.offer_vs_market_pct | round(1) }}%</strong></p>
+          {% endif %}
+          {% if result.assessment_text %}
+            <div class="notice">{{ result.assessment_text }}</div>
+          {% endif %}
+          {% if result.recommended_counter_min is not none and result.recommended_counter_max is not none %}
+            <p>Recommended counter range: <strong>${{ result.recommended_counter_min | round(0) }}</strong> – <strong>${{ result.recommended_counter_max | round(0) }}</strong></p>
+          {% endif %}
+        </section>
+
+        <section class="card">
+          <h3>Email to brand</h3>
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" value="{{ result.email_subject }}" readonly />
+          </div>
+          <div class="form-group">
+            <label>Body</label>
+            <textarea rows="8" readonly>{{ result.email_body }}</textarea>
+          </div>
+        </section>
+      {% else %}
+        <section class="card card-muted">
+          <h3>Results</h3>
+          <p>Submit an offer to see your market range and recommended counter.</p>
+        </section>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+{% if recent_negotiations %}
+  <section class="card">
+    <h3>Recent negotiations</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Brand</th>
+            <th>Offer</th>
+            <th>Market range</th>
+            <th>Offer vs market</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in recent_negotiations %}
+            <tr>
+              <td>{{ item.brand_name or 'Brand' }}</td>
+              <td>${{ item.brand_offer | round(0) }}</td>
+              <td>${{ item.market_min | round(0) }} – ${{ item.market_max | round(0) }}</td>
+              <td>
+                {% if item.offer_vs_market_pct is not none %}
+                  {{ item.offer_vs_market_pct | round(1) }}%
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ item.created_at.strftime("%b %d, %Y") if item.created_at else "" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endif %}
 {% endblock %}

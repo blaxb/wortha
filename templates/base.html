@@ -14,28 +14,30 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav container">
+  <header class="navbar">
+    <div class="container">
       <a class="logo" href="/">Wortha</a>
       {% block nav %}
         {% if user %}
           <div class="nav-links">
             <a href="/dashboard">Dashboard</a>
             <a href="/calculator">Calculator</a>
-            <a href="/deals/new">Deals</a>
-            <a href="/insights">Insights</a>
             {% if user.plan and user.plan|lower in ["pro", "premium"] %}
               <a href="/media-kit">Media Kit</a>
-              <a href="/analytics">Analytics</a>
             {% endif %}
+            <a href="/deals/new">Deals</a>
             {% if user.plan and user.plan|lower == "premium" %}
-              <a href="/negotiation">Negotiation</a>
               <a href="/rate-index">Rate Index</a>
               <a href="/reports/niche">Niche Reports</a>
             {% endif %}
+            {% if user.plan and user.plan|lower in ["pro", "premium"] %}
+              <a href="/analytics">Analytics</a>
+            {% endif %}
+            {% if user.plan and user.plan|lower in ["pro", "premium"] %}
+              <a href="/insights">Insights</a>
+            {% endif %}
           </div>
           <div class="nav-actions">
-            <a class="btn btn-secondary" href="/upgrade">Upgrade</a>
             <form action="/logout" method="post" class="logout-form">
               <button class="btn btn-ghost" type="submit">Log out</button>
             </form>
@@ -44,15 +46,17 @@
           <div class="nav-links">
             <a href="/">Home</a>
             <a href="/login">Log in</a>
-            <a href="/signup" class="btn btn-primary">Sign up</a>
+            <a href="/signup">Sign up</a>
           </div>
         {% endif %}
       {% endblock %}
-    </nav>
+    </div>
   </header>
 
-  <main class="main">
-    {% block content %}{% endblock %}
+  <main class="main-content">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
   </main>
 
   {% block footer %}{% endblock %}

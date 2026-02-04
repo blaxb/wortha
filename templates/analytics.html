@@ -1,182 +1,186 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-  <div class="page-header">
-    <h2>Performance Analytics</h2>
-    <p>Track your sponsorship revenue, pricing performance, and negotiation outcomes over time.</p>
-    <span class="badge">Plan: {{ user.plan|capitalize }}</span>
-  </div>
+<div class="page-header">
+  <h2>Performance Analytics</h2>
+  <p>Track your sponsorship revenue, pricing performance, and negotiation outcomes over time.</p>
+  <span class="badge">Plan: {{ user.plan|capitalize }}</span>
+</div>
 
-  <section class="card">
-    <h3>Summary</h3>
-    <div class="stats-grid">
-      <div><strong>Deals logged:</strong> {{ analytics.deals_summary.deals_count }}</div>
-      <div>
-        <strong>Total revenue:</strong>
-        {% if analytics.deals_summary.total_revenue is not none %}
-          ${{ analytics.deals_summary.total_revenue | round(0) }}
-        {% else %}
-          — <span class="muted">Log at least one deal to see this.</span>
-        {% endif %}
-      </div>
-      <div>
-        <strong>Average deal:</strong>
-        {% if analytics.deals_summary.avg_deal is not none %}
-          ${{ analytics.deals_summary.avg_deal | round(0) }}
-        {% else %}
-          — <span class="muted">Log at least one deal to see this.</span>
-        {% endif %}
-      </div>
-      <div>
-        <strong>Median deal:</strong>
-        {% if analytics.deals_summary.median_deal is not none %}
-          ${{ analytics.deals_summary.median_deal | round(0) }}
-        {% else %}
-          — <span class="muted">Log at least one deal to see this.</span>
-        {% endif %}
-      </div>
+<section class="card">
+  <h3>Summary</h3>
+  <div class="stats-grid">
+    <div><strong>Deals logged:</strong> {{ analytics.deals_summary.deals_count }}</div>
+    <div>
+      <strong>Total revenue:</strong>
+      {% if analytics.deals_summary.total_revenue is not none %}
+        ${{ analytics.deals_summary.total_revenue | round(0) }}
+      {% else %}
+        — <span class="muted">Log at least one deal to see this.</span>
+      {% endif %}
     </div>
+    <div>
+      <strong>Average deal:</strong>
+      {% if analytics.deals_summary.avg_deal is not none %}
+        ${{ analytics.deals_summary.avg_deal | round(0) }}
+      {% else %}
+        — <span class="muted">Log at least one deal to see this.</span>
+      {% endif %}
+    </div>
+    <div>
+      <strong>Median deal:</strong>
+      {% if analytics.deals_summary.median_deal is not none %}
+        ${{ analytics.deals_summary.median_deal | round(0) }}
+      {% else %}
+        — <span class="muted">Log at least one deal to see this.</span>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<div class="grid-two">
+  <section class="card">
+    <h3>Quoted vs closed</h3>
+    {% if analytics.flags.has_quoted_vs_closed %}
+      <p>
+        Average quoted fee: ${{ analytics.deals_summary.avg_quoted_fee | round(0) }}<br />
+        Average closed fee: ${{ analytics.deals_summary.avg_closed_fee | round(0) }}
+      </p>
+      {% if analytics.deals_summary.avg_close_vs_quote_pct is not none %}
+        <p>
+          On average, your closed deals end up {{ analytics.deals_summary.avg_close_vs_quote_pct | round(1) }}% above or below your initial quote.
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="muted">Add quoted prices when logging deals to see how far off your asks are from actual closes.</p>
+    {% endif %}
   </section>
 
-  <div class="grid grid-2">
+  {% if analytics.negotiation_summary.negotiation_count > 0 %}
     <section class="card">
-      <h3>Quoted vs closed</h3>
-      {% if analytics.flags.has_quoted_vs_closed %}
-        <p>
-          Average quoted fee: ${{ analytics.deals_summary.avg_quoted_fee | round(0) }}<br />
-          Average closed fee: ${{ analytics.deals_summary.avg_closed_fee | round(0) }}
-        </p>
-        {% if analytics.deals_summary.avg_close_vs_quote_pct is not none %}
-          <p>
-            On average, your closed deals end up {{ analytics.deals_summary.avg_close_vs_quote_pct | round(1) }}% above or below your initial quote.
-          </p>
-        {% endif %}
+      <h3>Negotiation uplift</h3>
+      <p>Negotiations logged: {{ analytics.negotiation_summary.negotiation_count }}</p>
+      {% if analytics.flags.has_negotiation_uplift and analytics.negotiation_summary.avg_uplift_pct is not none %}
+        <p>You raise brand offers by an average of {{ analytics.negotiation_summary.avg_uplift_pct | round(1) }}% when deals close.</p>
       {% else %}
-        <p class="muted">Add quoted prices when logging deals to see how far off your asks are from actual closes.</p>
+        <p class="muted">Link negotiations to logged deals to see how much you typically raise brand offers.</p>
+      {% endif %}
+      {% if analytics.negotiation_summary.outcomes %}
+        <ul>
+          {% for outcome, count in analytics.negotiation_summary.outcomes.items() %}
+            <li>{{ outcome.replace('_', ' ')|title }}: {{ count }}</li>
+          {% endfor %}
+        </ul>
       {% endif %}
     </section>
-
-    {% if analytics.negotiation_summary.negotiation_count > 0 %}
-      <section class="card">
-        <h3>Negotiation uplift</h3>
-        <p>Negotiations logged: {{ analytics.negotiation_summary.negotiation_count }}</p>
-        {% if analytics.flags.has_negotiation_uplift and analytics.negotiation_summary.avg_uplift_pct is not none %}
-          <p>You raise brand offers by an average of {{ analytics.negotiation_summary.avg_uplift_pct | round(1) }}% when deals close.</p>
-        {% else %}
-          <p class="muted">Link negotiations to logged deals to see how much you typically raise brand offers.</p>
-        {% endif %}
-        {% if analytics.negotiation_summary.outcomes %}
-          <ul>
-            {% for outcome, count in analytics.negotiation_summary.outcomes.items() %}
-              <li>{{ outcome.replace('_', ' ')|title }}: {{ count }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-      </section>
-    {% endif %}
-  </div>
-
-  <section class="card">
-    <h3>Breakdowns</h3>
-    <div class="two-column">
-      <div>
-        <h4>By platform</h4>
-        {% if analytics.platform_breakdown %}
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Platform</th>
-                  <th class="text-right">Deals</th>
-                  <th class="text-right">Avg deal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for row in analytics.platform_breakdown %}
-                  <tr>
-                    <td>{{ row.label }}</td>
-                    <td class="text-right">{{ row.count }}</td>
-                    <td class="text-right">${{ row.avg_fee | round(0) }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <p class="muted">No platform data yet.</p>
-        {% endif %}
-      </div>
-      <div>
-        <h4>By deal type</h4>
-        {% if analytics.deal_type_breakdown %}
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Deal type</th>
-                  <th class="text-right">Deals</th>
-                  <th class="text-right">Avg deal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for row in analytics.deal_type_breakdown %}
-                  <tr>
-                    <td>{{ row.label }}</td>
-                    <td class="text-right">{{ row.count }}</td>
-                    <td class="text-right">${{ row.avg_fee | round(0) }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <p class="muted">No deal type data yet.</p>
-        {% endif %}
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h3>Monthly trend</h3>
-    {% if analytics.monthly_trend %}
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Month</th>
-              <th class="text-right">Deals</th>
-              <th class="text-right">Total revenue</th>
-              <th class="text-right">Avg deal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in analytics.monthly_trend %}
-              <tr>
-                <td>{{ row.month }}/{{ row.year }}</td>
-                <td class="text-right">{{ row.deal_count }}</td>
-                <td class="text-right">
-                  {% if row.total_revenue is not none %}
-                    ${{ row.total_revenue | round(0) }}
-                  {% else %}
-                    —
-                  {% endif %}
-                </td>
-                <td class="text-right">
-                  {% if row.avg_deal is not none %}
-                    ${{ row.avg_deal | round(0) }}
-                  {% else %}
-                    —
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p class="muted">No deal history yet.</p>
-    {% endif %}
-  </section>
+  {% endif %}
 </div>
+
+<section class="card">
+  <h3>Breakdowns</h3>
+  <div class="grid-two">
+    <div>
+      <h4>By platform</h4>
+      {% if analytics.platform_breakdown %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th class="text-right">Deals</th>
+                <th class="text-right">Avg deal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in analytics.platform_breakdown %}
+                <tr>
+                  <td>{{ row.label }}</td>
+                  <td class="text-right">{{ row.count }}</td>
+                  <td class="text-right">${{ row.avg_fee | round(0) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="card card-muted">
+          <p>No platform data yet.</p>
+        </div>
+      {% endif %}
+    </div>
+    <div>
+      <h4>By deal type</h4>
+      {% if analytics.deal_type_breakdown %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Deal type</th>
+                <th class="text-right">Deals</th>
+                <th class="text-right">Avg deal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in analytics.deal_type_breakdown %}
+                <tr>
+                  <td>{{ row.label }}</td>
+                  <td class="text-right">{{ row.count }}</td>
+                  <td class="text-right">${{ row.avg_fee | round(0) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="card card-muted">
+          <p>No deal type data yet.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h3>Monthly trend</h3>
+  {% if analytics.monthly_trend %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th class="text-right">Deals</th>
+            <th class="text-right">Total revenue</th>
+            <th class="text-right">Avg deal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in analytics.monthly_trend %}
+            <tr>
+              <td>{{ row.month }}/{{ row.year }}</td>
+              <td class="text-right">{{ row.deal_count }}</td>
+              <td class="text-right">
+                {% if row.total_revenue is not none %}
+                  ${{ row.total_revenue | round(0) }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="text-right">
+                {% if row.avg_deal is not none %}
+                  ${{ row.avg_deal | round(0) }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="card card-muted">
+      <p>No deal history yet.</p>
+    </div>
+  {% endif %}
+</section>
 {% endblock %}

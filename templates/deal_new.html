@@ -1,194 +1,192 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-  <div class="page-header">
-    <h2>Log a Sponsorship Deal</h2>
-    <p>Logging deals helps you track earnings and, if you opt in, contributes anonymized data to the Community Rate Index.</p>
-  </div>
-  {% if saved %}
-    <div class="alert">Deal saved. Thank you for contributing!</div>
-  {% endif %}
-  {% if error %}
-    <div class="alert alert-danger">{{ error }}</div>
-  {% endif %}
-
-  <form class="form" method="post" action="/deals/new">
-    <div class="stack">
-      <section class="card">
-        <h3>Brand &amp; deliverables</h3>
-        <div class="form-group">
-          <label>Brand name <span class="muted">(optional, never shown in public data)</span></label>
-          <input type="text" name="brand_name" value="{{ form_data.get('brand_name', '') }}" />
-        </div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Deal type</label>
-            {% set deal_type_value = form_data.get('deal_type', '') %}
-            <select name="deal_type">
-              <option value="">Select one</option>
-              {% for value, label in DEAL_TYPES %}
-                <option value="{{ value }}" {% if deal_type_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Other deal type (optional)</label>
-            <input type="text" name="deal_type_other" value="{{ form_data.get('deal_type_other', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Content format</label>
-            <select name="content_format">
-              {% set content_value = form_data.get('content_format', '') %}
-              <option value="">Select one</option>
-              {% for value, label in CONTENT_FORMATS %}
-                <option value="{{ value }}" {% if content_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Other content format (optional)</label>
-            <input type="text" name="content_format_other" value="{{ form_data.get('content_format_other', '') }}" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Deliverables</label>
-          <textarea name="deliverables" rows="3" placeholder="1 Reel + 2 Stories">{{ form_data.get('deliverables', '') }}</textarea>
-        </div>
-        <div class="form-group">
-          <label>Usage rights</label>
-          <textarea name="usage_rights" rows="2" placeholder="30 days paid social">{{ form_data.get('usage_rights', '') }}</textarea>
-        </div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Campaign duration (days)</label>
-            <input type="number" name="duration_days" value="{{ form_data.get('duration_days', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Exclusivity</label>
-            <div>
-              <input type="checkbox" name="is_exclusive" {% if form_data.get('is_exclusive') %}checked{% endif %} />
-              <span>Includes exclusivity clause</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>Your metrics at the time</h3>
-        {% set platform_value = form_data.get('platform', '') %}
-        {% set niche_value = form_data.get('niche', profile.niche if profile else '') %}
-        {% set geo_value = form_data.get('geo_region', profile.audience_location if profile else 'us') %}
-        {% set followers_value = form_data.get('follower_count', profile.followers if profile else '') %}
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Platform</label>
-            <select name="platform">
-              <option value="">Select one</option>
-              {% for value, label in PLATFORMS %}
-                <option value="{{ value }}" {% if platform_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Niche</label>
-            <select name="niche">
-              <option value="">Select one</option>
-              {% for value, label in NICHES %}
-                <option value="{{ value }}" {% if niche_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Other niche (optional)</label>
-            <input type="text" name="niche_other" value="{{ form_data.get('niche_other', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Geo region</label>
-            <select name="geo_region">
-              <option value="">Select one</option>
-              {% for value, label in GEO_REGIONS %}
-                <option value="{{ value }}" {% if geo_value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Followers</label>
-            <input type="number" name="follower_count" value="{{ followers_value }}" />
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>Money</h3>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Total fee (USD)</label>
-            <input type="number" step="0.01" name="total_fee_usd" value="{{ form_data.get('total_fee_usd', '') }}" required />
-          </div>
-          <div class="form-group">
-            <label>Quoted fee (USD) <span class="muted">(optional)</span></label>
-            <input type="number" step="0.01" name="quoted_fee_usd" value="{{ form_data.get('quoted_fee_usd', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Cash portion (USD)</label>
-            <input type="number" step="0.01" name="cash_fee_usd" value="{{ form_data.get('cash_fee_usd', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Non-cash value (USD)</label>
-            <input type="number" step="0.01" name="non_cash_value_usd" value="{{ form_data.get('non_cash_value_usd', '') }}" />
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>Performance (optional)</h3>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Reported views</label>
-            <input type="number" name="reported_views" value="{{ form_data.get('reported_views', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Reported clicks</label>
-            <input type="number" name="reported_clicks" value="{{ form_data.get('reported_clicks', '') }}" />
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>Negotiation details (optional)</h3>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Negotiation session ID</label>
-            <input type="number" name="negotiation_session_id" value="{{ form_data.get('negotiation_session_id', '') }}" />
-          </div>
-          <div class="form-group">
-            <label>Outcome</label>
-            {% set outcome_value = form_data.get('outcome', 'won') %}
-            <select name="outcome">
-              <option value="won" {% if outcome_value == "won" %}selected{% endif %}>Won</option>
-              <option value="lost" {% if outcome_value == "lost" %}selected{% endif %}>Lost</option>
-              <option value="pending" {% if outcome_value == "pending" %}selected{% endif %}>Pending</option>
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>Community sharing</h3>
-        <div class="form-group">
-          <div>
-            <input type="checkbox" name="share_in_index" {% if form_data.get('share_in_index', 'on') %}checked{% endif %} />
-            <span>Share this deal (anonymously) in the Community Rate Index.</span>
-          </div>
-        </div>
-        <p class="muted">We never show your brand name or personal info. Data is aggregated by niche, follower tier, platform, and region.</p>
-      </section>
-
-      <section class="card">
-        <button class="btn btn-primary" type="submit">Save deal</button>
-      </section>
-    </div>
-  </form>
+<div class="page-header">
+  <h2>Log a Sponsorship Deal</h2>
+  <p>Logging deals helps you track earnings and, if you opt in, contributes anonymized data to the Community Rate Index.</p>
 </div>
+{% if saved %}
+  <div class="alert">Deal saved. Thank you for contributing!</div>
+{% endif %}
+{% if error %}
+  <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<form class="form" method="post" action="/deals/new">
+  <div class="stack">
+    <section class="card">
+      <h3>Brand &amp; deliverables</h3>
+      <div class="form-group">
+        <label>Brand name <span class="muted">(optional, never shown in public data)</span></label>
+        <input type="text" name="brand_name" value="{{ form_data.get('brand_name', '') }}" />
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Deal type</label>
+          {% set deal_type_value = form_data.get('deal_type', '') %}
+          <select name="deal_type">
+            <option value="">Select one</option>
+            {% for value, label in DEAL_TYPES %}
+              <option value="{{ value }}" {% if deal_type_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Other deal type (optional)</label>
+          <input type="text" name="deal_type_other" value="{{ form_data.get('deal_type_other', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Content format</label>
+          <select name="content_format">
+            {% set content_value = form_data.get('content_format', '') %}
+            <option value="">Select one</option>
+            {% for value, label in CONTENT_FORMATS %}
+              <option value="{{ value }}" {% if content_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Other content format (optional)</label>
+          <input type="text" name="content_format_other" value="{{ form_data.get('content_format_other', '') }}" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Deliverables</label>
+        <textarea name="deliverables" rows="3" placeholder="1 Reel + 2 Stories">{{ form_data.get('deliverables', '') }}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Usage rights</label>
+        <textarea name="usage_rights" rows="2" placeholder="30 days paid social">{{ form_data.get('usage_rights', '') }}</textarea>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Campaign duration (days)</label>
+          <input type="number" name="duration_days" value="{{ form_data.get('duration_days', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Exclusivity</label>
+          <div>
+            <input type="checkbox" name="is_exclusive" {% if form_data.get('is_exclusive') %}checked{% endif %} />
+            <span>Includes exclusivity clause</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Your metrics at the time</h3>
+      {% set platform_value = form_data.get('platform', '') %}
+      {% set niche_value = form_data.get('niche', profile.niche if profile else '') %}
+      {% set geo_value = form_data.get('geo_region', profile.audience_location if profile else 'us') %}
+      {% set followers_value = form_data.get('follower_count', profile.followers if profile else '') %}
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Platform</label>
+          <select name="platform">
+            <option value="">Select one</option>
+            {% for value, label in PLATFORMS %}
+              <option value="{{ value }}" {% if platform_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Niche</label>
+          <select name="niche">
+            <option value="">Select one</option>
+            {% for value, label in NICHES %}
+              <option value="{{ value }}" {% if niche_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Other niche (optional)</label>
+          <input type="text" name="niche_other" value="{{ form_data.get('niche_other', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Geo region</label>
+          <select name="geo_region">
+            <option value="">Select one</option>
+            {% for value, label in GEO_REGIONS %}
+              <option value="{{ value }}" {% if geo_value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Followers</label>
+          <input type="number" name="follower_count" value="{{ followers_value }}" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Money</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Total fee (USD)</label>
+          <input type="number" step="0.01" name="total_fee_usd" value="{{ form_data.get('total_fee_usd', '') }}" required />
+        </div>
+        <div class="form-group">
+          <label>Quoted fee (USD) <span class="muted">(optional)</span></label>
+          <input type="number" step="0.01" name="quoted_fee_usd" value="{{ form_data.get('quoted_fee_usd', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Cash portion (USD)</label>
+          <input type="number" step="0.01" name="cash_fee_usd" value="{{ form_data.get('cash_fee_usd', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Non-cash value (USD)</label>
+          <input type="number" step="0.01" name="non_cash_value_usd" value="{{ form_data.get('non_cash_value_usd', '') }}" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Performance (optional)</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Reported views</label>
+          <input type="number" name="reported_views" value="{{ form_data.get('reported_views', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Reported clicks</label>
+          <input type="number" name="reported_clicks" value="{{ form_data.get('reported_clicks', '') }}" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Negotiation details (optional)</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Negotiation session ID</label>
+          <input type="number" name="negotiation_session_id" value="{{ form_data.get('negotiation_session_id', '') }}" />
+        </div>
+        <div class="form-group">
+          <label>Outcome</label>
+          {% set outcome_value = form_data.get('outcome', 'won') %}
+          <select name="outcome">
+            <option value="won" {% if outcome_value == "won" %}selected{% endif %}>Won</option>
+            <option value="lost" {% if outcome_value == "lost" %}selected{% endif %}>Lost</option>
+            <option value="pending" {% if outcome_value == "pending" %}selected{% endif %}>Pending</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Community sharing</h3>
+      <div class="form-group">
+        <div>
+          <input type="checkbox" name="share_in_index" {% if form_data.get('share_in_index', 'on') %}checked{% endif %} />
+          <span>Share this deal (anonymously) in the Community Rate Index.</span>
+        </div>
+      </div>
+      <p class="muted">We never show your brand name or personal info. Data is aggregated by niche, follower tier, platform, and region.</p>
+    </section>
+
+    <section class="card">
+      <button class="btn btn-primary" type="submit">Save deal</button>
+    </section>
+  </div>
+</form>
 {% endblock %}

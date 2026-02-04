@@ -12,9 +12,17 @@ from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
+from sqlalchemy.exc import IntegrityError
 from starlette.middleware.sessions import SessionMiddleware
 
-from auth import authenticate_user, get_current_user, hash_password, login_user, logout_user
+from auth import (
+    authenticate_user,
+    get_current_user,
+    hash_password,
+    login_user,
+    logout_user,
+    normalize_email,
+)
 from security import require_plan_or_redirect
 from constants import (
     CONTENT_FORMATS,
@@ -221,6 +229,8 @@ def signup(
     confirm_password: str = Form(...),
     session: Session = Depends(get_session),
 ):
+    normalized_email = normalize_email(email)
+    normalized_username = username.strip()
     if password != confirm_password:
         return templates.TemplateResponse(
             "signup.html",
@@ -229,7 +239,9 @@ def signup(
         )
 
     existing = session.exec(
-        select(User).where((User.email == email) | (User.username == username))
+        select(User).where(
+            (User.email == normalized_email) | (User.username == normalized_username)
+        )
     ).first()
     if existing:
         return templates.TemplateResponse(
@@ -238,10 +250,26 @@ def signup(
             status_code=400,
         )
 
-    user = User(email=email, username=username, hashed_password=hash_password(password))
+    user = User(
+        email=normalized_email,
+        username=normalized_username,
+        hashed_password=hash_password(password),
+    )
     session.add(user)
-    session.commit()
-    session.refresh(user)
+    try:
+        session.commit()
+        session.refresh(user)
+    except IntegrityError:
+        session.rollback()
+        return templates.TemplateResponse(
+            "signup.html",
+            {
+                "request": request,
+                "user": None,
+                "error": "Email or username already exists.",
+            },
+            status_code=400,
+        )
 
     login_user(request, user)
     return RedirectResponse(url="/dashboard", status_code=303)

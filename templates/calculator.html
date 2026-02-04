@@ -1,98 +1,98 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-  <div class="page-header">
-    <h2>Pricing Calculator</h2>
-    <p>Estimate a fair sponsorship range using a CPM-based model.</p>
-  </div>
+<div class="page-header">
+  <h2>Pricing Calculator</h2>
+  <p>Estimate a fair sponsorship range using a CPM-based model.</p>
+</div>
 
-  <div class="grid grid-2">
-    <section class="card">
-      <h3>Your inputs</h3>
-      <form class="form" action="/calculator" method="post">
-        <div class="form-group">
-          <label>Platform</label>
-          <select name="platform" required>
-            <option value="">Select one</option>
-            {% for value, label in PLATFORMS %}
-              <option value="{{ value }}" {% if platform == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Niche</label>
-          <select name="niche" required>
-            <option value="">Select one</option>
-            {% for value, label in NICHES %}
-              <option value="{{ value }}" {% if niche == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Other niche (optional)</label>
-          <input type="text" name="niche_other" placeholder="Describe niche" value="{{ niche_other or '' }}" />
-        </div>
-        <div class="form-group">
-          <label>Deal type</label>
-          <select name="deal_type" required>
-            <option value="">Select one</option>
-            {% for value, label in DEAL_TYPES %}
-              <option value="{{ value }}" {% if deal_type == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Other deal type (optional)</label>
-          <input type="text" name="deal_type_other" placeholder="Describe deal type" value="{{ deal_type_other or '' }}" />
-        </div>
-        <div class="form-group">
-          <label>Follower count</label>
-          <input type="number" name="followers" placeholder="25000" value="{{ followers or '' }}" />
-        </div>
-        <div class="form-group">
-          <label>Average views</label>
-          <input type="number" name="avg_views" placeholder="12000" value="{{ avg_views or '' }}" />
-        </div>
-        <div class="form-group">
-          <label>Engagement rate (%)</label>
-          <input type="number" step="0.01" name="engagement_rate" placeholder="3.5" value="{{ engagement_rate or '' }}" />
-        </div>
-        <div class="form-group">
-          <label>Geo region</label>
-          <select name="geo_region">
-            <option value="">Select one</option>
-            {% for value, label in GEO_REGIONS %}
-              <option value="{{ value }}" {% if geo_region == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <button class="btn btn-primary" type="submit">Calculate my rate</button>
-      </form>
-    </section>
+<div class="grid-two">
+  <section class="card">
+    <h3>Your inputs</h3>
+    <form class="form" action="/calculator" method="post">
+      <div class="form-group">
+        <label>Platform</label>
+        <select name="platform" required>
+          <option value="">Select one</option>
+          {% for value, label in PLATFORMS %}
+            <option value="{{ value }}" {% if platform == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Niche</label>
+        <select name="niche" required>
+          <option value="">Select one</option>
+          {% for value, label in NICHES %}
+            <option value="{{ value }}" {% if niche == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Other niche (optional)</label>
+        <input type="text" name="niche_other" placeholder="Describe niche" value="{{ niche_other or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Deal type</label>
+        <select name="deal_type" required>
+          <option value="">Select one</option>
+          {% for value, label in DEAL_TYPES %}
+            <option value="{{ value }}" {% if deal_type == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Other deal type (optional)</label>
+        <input type="text" name="deal_type_other" placeholder="Describe deal type" value="{{ deal_type_other or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Follower count</label>
+        <input type="number" name="followers" placeholder="25000" value="{{ followers or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Average views</label>
+        <input type="number" name="avg_views" placeholder="12000" value="{{ avg_views or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Engagement rate (%)</label>
+        <input type="number" step="0.01" name="engagement_rate" placeholder="3.5" value="{{ engagement_rate or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Geo region</label>
+        <select name="geo_region">
+          <option value="">Select one</option>
+          {% for value, label in GEO_REGIONS %}
+            <option value="{{ value }}" {% if geo_region == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">Calculate my rate</button>
+    </form>
+  </section>
 
-    <section class="card">
-      <h3>Recommended rate</h3>
-      {% if limit_reached %}
-        <p>{{ message }}</p>
-        <a class="btn btn-secondary" href="/upgrade">Upgrade to Pro</a>
-      {% elif result %}
-        <p>Based on your metrics, we recommend charging <strong>${{ '%.2f'|format(result.recommended_min) }}</strong> – <strong>${{ '%.2f'|format(result.recommended_max) }}</strong> for this deal.</p>
-        <h4>Breakdown</h4>
-        <ul>
-          <li>Base CPM for {{ platform_label(platform) }}: ${{ '%.2f'|format(result.base_cpm) }}</li>
-          <li>Niche multiplier: {{ '%.2f'|format(result.niche_multiplier) }}x</li>
-          <li>Engagement multiplier: {{ '%.2f'|format(result.engagement_multiplier) }}x</li>
-          <li>Geo multiplier: {{ '%.2f'|format(result.geo_multiplier) }}x</li>
-          <li>Effective CPM: ${{ '%.2f'|format(result.effective_cpm) }}</li>
-          {% if community_note %}
-            <li>{{ community_note }}</li>
-          {% endif %}
-        </ul>
-      {% else %}
-        <p class="muted">Fill out your inputs to see your recommended rate range.</p>
-      {% endif %}
-    </section>
-  </div>
+  <section class="card">
+    <h3>Recommended rate</h3>
+    {% if limit_reached %}
+      <p>{{ message }}</p>
+      <a class="btn btn-secondary" href="/upgrade">Upgrade to Pro</a>
+    {% elif result %}
+      <p>Based on your metrics, we recommend charging <strong>${{ '%.2f'|format(result.recommended_min) }}</strong> – <strong>${{ '%.2f'|format(result.recommended_max) }}</strong> for this deal.</p>
+      <h4>Breakdown</h4>
+      <ul>
+        <li>Base CPM for {{ platform_label(platform) }}: ${{ '%.2f'|format(result.base_cpm) }}</li>
+        <li>Niche multiplier: {{ '%.2f'|format(result.niche_multiplier) }}x</li>
+        <li>Engagement multiplier: {{ '%.2f'|format(result.engagement_multiplier) }}x</li>
+        <li>Geo multiplier: {{ '%.2f'|format(result.geo_multiplier) }}x</li>
+        <li>Effective CPM: ${{ '%.2f'|format(result.effective_cpm) }}</li>
+        {% if community_note %}
+          <li>{{ community_note }}</li>
+        {% endif %}
+      </ul>
+    {% else %}
+      <div class="card card-muted">
+        <p>Fill out your inputs to see your recommended rate range.</p>
+      </div>
+    {% endif %}
+  </section>
 </div>
 {% endblock %}
