@@ -267,7 +267,7 @@ def get_or_create_creator_profile(session: Session, user_id: int) -> CreatorProf
         audience_gender_split="60% women / 40% men",
         bio="Add a short brand-facing bio here.",
         website_url="https://example.com",
-        contact_email="contact@example.com",
+        contact_email="max@wortha.app",
     )
     session.add(profile)
     session.commit()

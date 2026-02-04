@@ -253,6 +253,20 @@ def index(request: Request, session: Session = Depends(get_session)):
     return templates.TemplateResponse("index.html", {"request": request, "user": user})
 
 
+@app.get("/terms", response_class=HTMLResponse)
+def terms(request: Request, session: Session = Depends(get_session)):
+    user_id = request.session.get("user_id")
+    user = session.get(User, user_id) if user_id else None
+    return templates.TemplateResponse("terms.html", {"request": request, "user": user})
+
+
+@app.get("/privacy", response_class=HTMLResponse)
+def privacy(request: Request, session: Session = Depends(get_session)):
+    user_id = request.session.get("user_id")
+    user = session.get(User, user_id) if user_id else None
+    return templates.TemplateResponse("privacy.html", {"request": request, "user": user})
+
+
 @app.get("/signup", response_class=HTMLResponse)
 def signup_form(request: Request, session: Session = Depends(get_session)):
     user_id = request.session.get("user_id")
