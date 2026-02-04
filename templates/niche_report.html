@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h2>Quarterly Niche Report</h2>
+    {% if stats %}
+      <p>Community benchmarks for {{ niche_label(stats.niche) }} in {% if stats.platform == "all" %}All platforms{% else %}{{ platform_label(stats.platform) }}{% endif %} – Q{{ stats.quarter }} {{ stats.year }}.</p>
+    {% else %}
+      <p>Community benchmarks for your niche and platform.</p>
+    {% endif %}
+    <span class="badge">Premium feature</span>
+  </div>
+
+  <section class="card">
+    <form class="form" method="get" action="/reports/niche">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Niche</label>
+          <select name="niche" required>
+            <option value="">Select one</option>
+            {% for value, label in NICHES %}
+              <option value="{{ value }}" {% if selected_niche == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Platform</label>
+          <select name="platform">
+            <option value="all" {% if selected_platform == "all" %}selected{% endif %}>All platforms</option>
+            {% for value, label in PLATFORMS %}
+              <option value="{{ value }}" {% if selected_platform == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Year</label>
+          <select name="year">
+            {% for y in range(current_year - 2, current_year + 1) %}
+              <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quarter</label>
+          <select name="quarter">
+            {% for q in [1, 2, 3, 4] %}
+              <option value="{{ q }}" {% if selected_quarter == q %}selected{% endif %}>Q{{ q }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">View report</button>
+    </form>
+  </section>
+
+  {% if not stats %}
+    <section class="card">
+      <p>Select a niche and quarter to view a report based on community deals.</p>
+    </section>
+  {% else %}
+    {% if stats.deal_count == 0 %}
+      <section class="card">
+        <p>We don’t have enough community data for that niche/quarter yet. Try a different timeframe or niche.</p>
+      </section>
+    {% else %}
+      <section class="card">
+        <h3>Numbers</h3>
+        <div class="stats-grid">
+          <div>Deals included: {{ stats.deal_count }}</div>
+          <div>Average fee: {% if stats.avg_fee is not none %}${{ stats.avg_fee | round(0) }}{% else %}—{% endif %}</div>
+          <div>Median fee: {% if stats.median_fee is not none %}${{ stats.median_fee | round(0) }}{% else %}—{% endif %}</div>
+          <div>Range: {% if stats.min_fee is not none %}${{ stats.min_fee | round(0) }}{% else %}—{% endif %}–{% if stats.max_fee is not none %}${{ stats.max_fee | round(0) }}{% else %}—{% endif %}</div>
+          {% if stats.avg_cpm is not none %}
+            <div>Average CPM: ${{ stats.avg_cpm | round(2) }}</div>
+            <div>Median CPM: ${{ stats.median_cpm | round(2) }}</div>
+          {% endif %}
+        </div>
+      </section>
+
+      {% if not stats.enough_data_for_report %}
+        <section class="card">
+          <p>We don’t have enough volume to generate a full AI report yet, but here’s what we know so far.</p>
+        </section>
+      {% endif %}
+
+      {% if stats.enough_data_for_report and report_text %}
+        <section class="card">
+          <h3>AI report based on {{ stats.deal_count }} deals</h3>
+          <div class="card card-muted">
+            {% for paragraph in report_text.split('\\n') %}
+              {% if paragraph.strip() %}
+                <p>{{ paragraph }}</p>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {% if stats.prev_quarter %}
+        <section class="card">
+          <h3>Quarter-over-quarter comparison</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Q{{ stats.prev_quarter.quarter }} {{ stats.prev_quarter.year }}</th>
+                  <th>Q{{ stats.quarter }} {{ stats.year }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Deals</td>
+                  <td>{{ stats.prev_quarter.deal_count }}</td>
+                  <td>{{ stats.deal_count }}</td>
+                </tr>
+                <tr>
+                  <td>Avg deal</td>
+                  <td>
+                    {% if stats.prev_quarter.avg_fee is not none %}
+                      ${{ stats.prev_quarter.avg_fee | round(0) }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if stats.avg_fee is not none %}
+                      ${{ stats.avg_fee | round(0) }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                </tr>
+                {% if stats.avg_cpm is not none and stats.prev_quarter.avg_cpm is not none %}
+                  <tr>
+                    <td>Avg CPM</td>
+                    <td>${{ stats.prev_quarter.avg_cpm | round(2) }}</td>
+                    <td>${{ stats.avg_cpm | round(2) }}</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

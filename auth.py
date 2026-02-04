@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import Depends, Request
+from fastapi import Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from passlib.context import CryptContext
 from sqlmodel import Session, select
@@ -42,8 +42,8 @@ def get_current_user(
 ) -> User:
     user_id = request.session.get("user_id")
     if not user_id:
-        raise RedirectResponse(url="/login", status_code=303)
+        raise HTTPException(status_code=303, headers={"Location": "/login"})
     user = session.get(User, user_id)
     if not user:
-        raise RedirectResponse(url="/login", status_code=303)
+        raise HTTPException(status_code=303, headers={"Location": "/login"})
     return user

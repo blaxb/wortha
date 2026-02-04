@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h2>AI Insights for Your Creator Business</h2>
+    <p>Based on your deals, negotiations, and pricing data.</p>
+    <span class="badge">Plan: {{ user.plan|capitalize }}</span>
+  </div>
+
+  {% if user.plan|lower == "free" %}
+    <section class="card">
+      <p><strong>Get deeper, niche-specific insights with Pro and Premium.</strong></p>
+      <a class="btn btn-secondary" href="/upgrade">Upgrade</a>
+    </section>
+  {% endif %}
+
+  <section class="card">
+    <h3>Stats overview</h3>
+    <div class="stats-grid">
+      <div>Deals logged: {{ overview.deals_logged or 0 }}</div>
+      <div>Average deal: {% if overview.avg_deal %}${{ overview.avg_deal | round(0) }}{% else %}—{% endif %}</div>
+      <div>Median deal: {% if overview.median_deal %}${{ overview.median_deal | round(0) }}{% else %}—{% endif %}</div>
+      <div>Avg CPM (with views): {% if overview.avg_cpm %}${{ overview.avg_cpm | round(2) }}{% else %}—{% endif %}</div>
+      <div>Most common platform: {% if overview.most_common_platform %}{{ platform_label(overview.most_common_platform) }}{% else %}—{% endif %}</div>
+    </div>
+    {% set typical = stats.calculator_summary.typical_range if stats.calculator_summary else None %}
+    {% if typical %}
+      <p class="muted">Typical calculator range for {{ platform_label(typical.platform) }} / {{ niche_label(typical.niche) }}: ${% if typical.avg_min %}{{ typical.avg_min | round(0) }}{% else %}0{% endif %} – ${% if typical.avg_max %}{{ typical.avg_max | round(0) }}{% else %}0{% endif %}</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h3>AI Insights</h3>
+    {% if insights_result.status == "no_data" %}
+      <div class="notice">
+        <p>{{ insights_result.message }}</p>
+        <ul>
+          <li>Log at least 1 sponsorship deal.</li>
+          <li>Use the negotiation assistant at least once.</li>
+          <li>Run 2–3 pricing calculations on your main platform.</li>
+        </ul>
+      </div>
+    {% elif insights_result.status == "error" %}
+      <div class="alert alert-danger">{{ insights_result.message }}</div>
+    {% elif insights_result.status == "ok" and insights_result.insights_text %}
+      <div class="card card-muted">
+        {% for line in insights_result.insights_text.splitlines() %}
+          {% if line.strip() %}
+            <p>{{ line }}</p>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <section class="card">
+    <h2>Your Pricing History</h2>
+    <p class="badge">Current plan: {{ user.plan|capitalize }}</p>
+    {% if user.plan == "free" %}
+      <div class="card card-muted">
+        <h3>Go Pro for full history &amp; unlimited calculations</h3>
+        <p>Pro unlocks unlimited calculations, saved history, and the upcoming media kit generator.</p>
+        <a class="btn btn-secondary" href="/upgrade">Upgrade to Pro</a>
+      </div>
+      <p>History is limited on the Free plan. Upgrade to Pro to unlock unlimited calculations and advanced tools.</p>
+    {% endif %}
+  </section>
+
+  {% if calculations %}
+    <section class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Platform</th>
+              <th>Niche</th>
+              <th>Deal type</th>
+              <th>Followers</th>
+              <th>Avg views</th>
+              <th>Recommended range</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in calculations %}
+              <tr>
+                <td>{{ item.created_at.strftime("%b %d, %Y %I:%M %p") }}</td>
+                <td>{{ platform_label(item.platform) }}</td>
+                <td>{{ niche_label(item.niche) }}</td>
+                <td>{{ deal_type_label(item.deal_type) }}</td>
+                <td>{{ item.followers or "—" }}</td>
+                <td>{{ item.avg_views or "—" }}</td>
+                <td>${{ '%.2f'|format(item.recommended_min) }} – ${{ '%.2f'|format(item.recommended_max) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% else %}
+    <section class="card">
+      <p>You haven’t run any pricing calculations yet. Start with the Free Pricing Calculator.</p>
+      <a class="btn btn-primary" href="/calculator">Open Free Pricing Calculator</a>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

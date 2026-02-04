@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h2>Media Kit Setup</h2>
+    <p>Fill this out once and we’ll generate a professional PDF media kit you can send to brands.</p>
+    <span class="badge">Current plan: {{ user.plan|capitalize }} (Pro feature)</span>
+  </div>
+  {% if saved %}
+    <div class="alert">Media kit saved.</div>
+  {% endif %}
+
+  <form class="form" action="/media-kit" method="post">
+    <div class="grid grid-2">
+      <div class="stack">
+        <section class="card">
+          <h3>Profile</h3>
+          <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" name="display_name" value="{{ profile.display_name or '' }}" required />
+          </div>
+          <div class="form-group">
+            <label>Tagline</label>
+            <input type="text" name="tagline" value="{{ profile.tagline or '' }}" />
+          </div>
+          <div class="form-group">
+            <label>Primary Platform</label>
+            <select name="primary_platform" required>
+              {% for value, label in PLATFORMS %}
+                <option value="{{ value }}" {% if profile.primary_platform == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Other platform (optional)</label>
+            <input type="text" name="primary_platform_other" value="{{ profile.primary_platform_other or '' }}" />
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Followers</label>
+              <input type="number" name="followers" value="{{ profile.followers or '' }}" />
+            </div>
+            <div class="form-group">
+              <label>Average Views</label>
+              <input type="number" name="avg_views" value="{{ profile.avg_views or '' }}" />
+            </div>
+            <div class="form-group">
+              <label>Engagement Rate (%)</label>
+              <input type="number" step="0.01" name="engagement_rate" value="{{ profile.engagement_rate or '' }}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Niche</label>
+            <select name="niche">
+              <option value="">Select one</option>
+              {% for value, label in NICHES %}
+                <option value="{{ value }}" {% if profile.niche == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Other niche (optional)</label>
+            <input type="text" name="niche_other" value="{{ profile.niche_other or '' }}" />
+          </div>
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea name="bio" rows="4">{{ profile.bio or '' }}</textarea>
+          </div>
+          <div class="form-group">
+            <label>Website URL</label>
+            <input type="text" name="website_url" value="{{ profile.website_url or '' }}" />
+          </div>
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="email" name="contact_email" value="{{ profile.contact_email or '' }}" />
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Audience</h3>
+          <div class="form-group">
+            <label>Audience Location</label>
+            <select name="audience_location">
+              <option value="">Select one</option>
+              {% for value, label in GEO_REGIONS %}
+                <option value="{{ value }}" {% if profile.audience_location == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Audience location notes (optional)</label>
+            <input type="text" name="audience_location_notes" value="{{ profile.audience_location_notes or '' }}" />
+          </div>
+          <div class="form-group">
+            <label>Audience Age Range</label>
+            <input type="text" name="audience_age_range" value="{{ profile.audience_age_range or '' }}" />
+          </div>
+          <div class="form-group">
+            <label>Audience Gender Split</label>
+            <input type="text" name="audience_gender_split" value="{{ profile.audience_gender_split or '' }}" />
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Pricing Packages</h3>
+          {% for package in packages %}
+            <div class="card card-muted">
+              <h4>Package {{ loop.index }}</h4>
+              <input type="hidden" name="packages-{{ loop.index0 }}-id" value="{{ package.id }}" />
+              <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="packages-{{ loop.index0 }}-name" value="{{ package.name or '' }}" />
+              </div>
+              <div class="form-group">
+                <label>Headline</label>
+                <input type="text" name="packages-{{ loop.index0 }}-headline" value="{{ package.headline or '' }}" />
+              </div>
+              <div class="form-group">
+                <label>Price (USD)</label>
+                <input type="number" step="0.01" name="packages-{{ loop.index0 }}-price" value="{{ package.price or '' }}" />
+              </div>
+              <div class="form-group">
+                <label>Deliverables</label>
+                <textarea name="packages-{{ loop.index0 }}-deliverables" rows="3">{{ package.deliverables or '' }}</textarea>
+              </div>
+              <div class="form-group">
+                <label>Notes</label>
+                <textarea name="packages-{{ loop.index0 }}-notes" rows="3">{{ package.notes or '' }}</textarea>
+              </div>
+            </div>
+          {% endfor %}
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="card card-elevated">
+          <h3>Live preview</h3>
+          <p class="muted">A condensed preview of your media kit layout.</p>
+          <div class="card card-muted">
+            <p><strong>{{ profile.display_name or "Creator Name" }}</strong></p>
+            <p class="muted">{{ profile.tagline or "Creator • Lifestyle • UGC" }}</p>
+            <p>Followers: {{ profile.followers or "—" }}</p>
+            <p>Avg views: {{ profile.avg_views or "—" }}</p>
+            <p>Engagement: {{ profile.engagement_rate or "—" }}%</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Actions</h3>
+          <div class="button-row">
+            <button class="btn btn-secondary" type="submit">Save Media Kit</button>
+            <a class="btn btn-primary" href="/media-kit/pdf">Download PDF</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

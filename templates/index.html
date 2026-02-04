@@ -1,162 +1,219 @@
 {% extends "base.html" %}
 
+{% block nav %}
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div class="nav-actions">
+    <a class="btn btn-ghost" href="/login">Log in</a>
+    <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
+  </div>
+{% endblock %}
+
 {% block content %}
 <section class="hero">
-  <div class="hero-grid">
+  <div class="container hero-grid">
     <div>
       <h1>Stop Underpricing Your Brand Deals</h1>
-      <p>Wortha helps creators price sponsorships using real benchmarks, not guesswork.</p>
+      <p>Wortha helps micro-creators price sponsorships with data-backed confidence.</p>
       <ul>
         <li>Built for creators with 5K–100K followers</li>
-        <li>Backed by community data and smart pricing logic</li>
+        <li>Benchmarked across niche, platform, and engagement</li>
+        <li>Designed to help you negotiate with clarity</li>
       </ul>
       <div class="hero-actions">
-        {% if user %}
-          <a class="btn" href="/calculator">Open your free calculator</a>
-        {% else %}
-          <a class="btn" href="/signup">Get your rate</a>
-        {% endif %}
-        <a class="text-link" href="#product">See how it works</a>
+        <a class="btn-primary btn" href="#waitlist">Join the waitlist</a>
+        <a class="btn-secondary btn" href="#how-it-works">See how it works</a>
       </div>
     </div>
-    <div class="hero-illustration" aria-hidden="true">
-      <div class="price-card">
-        <h3>Your fair rate</h3>
-        <div class="range">$850–$1,200</div>
-        <div class="meta">Based on CPM, engagement, and deal type</div>
+    <div class="hero-card" aria-hidden="true">
+      <div class="card-header">
+        <div>
+          <h3>Mock dashboard</h3>
+          <p class="section-subtitle">Pricing snapshot</p>
+        </div>
+        <span class="badge">Live preview</span>
+      </div>
+      <div class="metric">$850–$1,200</div>
+      <p class="meta">Recommended range for a TikTok Reel sponsorship</p>
+      <div class="card card-muted">
+        <p><strong>Base CPM:</strong> $18.50</p>
+        <p><strong>Niche multiplier:</strong> 1.2x</p>
+        <p><strong>Engagement:</strong> 4.1%</p>
       </div>
     </div>
   </div>
 </section>
 
 <section id="problem">
-  <h2 class="section-title">Creators are leaving money on the table — every single deal.</h2>
-  <div class="grid">
-    <div class="card">
-      <h4>No pricing benchmarks in one place</h4>
-      <p>Rates vary wildly by niche, platform, engagement, geography, and deal type. Without data, creators guess — and they almost always guess low.</p>
-    </div>
-    <div class="card">
-      <h4>Most creators feel underpaid</h4>
-      <p>Creators accept below-market rates because they lack the confidence or data to negotiate. Fear of losing the deal keeps them quiet.</p>
-    </div>
-    <div class="card">
-      <h4>Agencies take 20–50% for pricing advice</h4>
-      <p>Talent managers and MCNs provide pricing guidance as part of their service — but take a massive cut of every deal.</p>
+  <div class="container">
+    <h2 class="section-title">Creators are leaving money on the table — every deal.</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <h4>Pricing feels like guesswork</h4>
+        <p>Rates vary by niche, platform, engagement, and deal type. Without benchmarks, creators guess low.</p>
+      </div>
+      <div class="card">
+        <h4>Confidence is missing</h4>
+        <p>Most creators accept below-market offers because they don’t know how to justify a counter.</p>
+      </div>
+      <div class="card">
+        <h4>Agencies take huge cuts</h4>
+        <p>Managers often take 20–50% for pricing advice. Wortha puts the data in your hands.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="product">
-  <h2 class="section-title">What Wortha does for you</h2>
-  <p class="section-subtitle">A focused set of tools to price, pitch, and negotiate your brand deals.</p>
-  <div class="grid">
-    <div class="card">
-      <h4>Sponsorship Pricing Calculator</h4>
-      <p>Input your platform, niche, followers, average views, engagement rate, geography, and deal type. Wortha gives you a fair price range with clear CPM-based logic.</p>
-    </div>
-    <div class="card">
-      <h4>Auto Media Kit Generator</h4>
-      <p>Turn your pricing into a clean, professional PDF you can send to brands in seconds.</p>
-    </div>
-    <div class="card">
-      <h4>Smart Counter-Offers</h4>
-      <p>Paste a brand’s offer and get a suggested counter range plus a short justification you can send back.</p>
+<section id="how-it-works">
+  <div class="container">
+    <h2 class="section-title">What Wortha does for you</h2>
+    <p class="section-subtitle">A focused set of tools to price, pitch, and negotiate your brand deals.</p>
+    <div class="grid grid-2">
+      <div>
+        <ul>
+          <li><strong>Pricing calculator:</strong> CPM-based ranges with transparent multipliers.</li>
+          <li><strong>Media kit:</strong> Auto-generate a clean, brand-ready PDF.</li>
+          <li><strong>Negotiation assistant:</strong> Counter with data-backed confidence.</li>
+          <li><strong>Rate index:</strong> See anonymized benchmarks from creators like you.</li>
+        </ul>
+      </div>
+      <div class="card card-elevated">
+        <h3>Featured tools</h3>
+        <p>Calculator • Media Kit • Negotiation • Index</p>
+        <div class="hero-card">
+          <p class="meta">Next best action</p>
+          <div class="metric">$1,050</div>
+          <p class="meta">Suggested counter-offer range for your latest inquiry</p>
+        </div>
+      </div>
     </div>
   </div>
-  <p class="note">Built for micro-creators with 5K–100K followers on TikTok, YouTube, and Instagram.</p>
 </section>
 
 <section id="pricing">
-  <h2 class="section-title">Founding Creator Pricing</h2>
-  <p class="section-subtitle">Standard pricing is $19 / $49 per month. Founding creators lock in lower pricing forever.</p>
-  <div class="pricing-top">
-    Launching Soon Pricing:
-    <span class="strike">Starter — $19 / month</span>
-    <span class="strike">Pro — $49 / month</span>
-  </div>
-  <div class="pricing-cards">
-    <div class="pricing-card">
-      <span class="badge">Locked forever</span>
-      <h3>Founding Starter</h3>
-      <div class="price">$9 / month</div>
-      <ul>
-        <li>Unlimited pricing calculations</li>
-        <li>Basic media kit generator</li>
-        <li>Email support</li>
-      </ul>
+  <div class="container">
+    <h2 class="section-title">Founding Creator Pricing</h2>
+    <p class="section-subtitle">Standard pricing is $19 / $49 per month. Founding creators lock in lower pricing forever.</p>
+    <div class="grid grid-3">
+      <div class="card">
+        <span class="badge">Starter</span>
+        <h3>Founding Starter</h3>
+        <p class="metric">$9 / month</p>
+        <ul>
+          <li>Unlimited pricing calculations</li>
+          <li>Basic media kit generator</li>
+          <li>Email support</li>
+        </ul>
+      </div>
+      <div class="card card-elevated">
+        <span class="badge">Most popular</span>
+        <h3>Founding Pro</h3>
+        <p class="metric">$25 / month</p>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Benchmarks dashboard (coming soon)</li>
+          <li>Smart counter-offer suggestions</li>
+          <li>Priority access to new features</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="badge">Premium</span>
+        <h3>Founding Premium</h3>
+        <p class="metric">$49 / month</p>
+        <ul>
+          <li>Full rate index access</li>
+          <li>Negotiation assistant</li>
+          <li>Quarterly niche reports</li>
+          <li>Dedicated support</li>
+        </ul>
+      </div>
     </div>
-    <div class="pricing-card">
-      <span class="badge">Locked forever</span>
-      <h3>Founding Pro</h3>
-      <div class="price">$25 / month</div>
-      <ul>
-        <li>Everything in Starter</li>
-        <li>Benchmarks dashboard (coming soon)</li>
-        <li>Smart counter-offer suggestions</li>
-        <li>Priority access to new features</li>
-      </ul>
-    </div>
+    <p class="form-note">Founding pricing is limited. Once we launch publicly, new users will pay standard rates.</p>
   </div>
-  <p class="note">Founding pricing is limited. Once we launch publicly, new users will pay standard rates.</p>
 </section>
 
 <section id="waitlist">
-  <h2 class="section-title">Join the Wortha Waitlist</h2>
-  <p class="section-subtitle">Be one of the first creators to get access — and lock in founding pricing.</p>
-  <div class="form-wrap">
-    <form action="#" method="post">
-      <div>
-        <label for="name">Name</label>
-        <input id="name" name="name" type="text" placeholder="Your name" required />
-      </div>
-      <div>
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email" placeholder="you@example.com" required />
-      </div>
-      <div>
-        <label for="platform">Primary platform</label>
-        <select id="platform" name="platform">
-          <option value="">Select one</option>
-          <option>TikTok</option>
-          <option>YouTube</option>
-          <option>Instagram</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div>
-        <label for="followers">Follower count</label>
-        <input id="followers" name="followers" type="text" placeholder="e.g., 24,500" />
-      </div>
-      <button class="btn" type="submit">Join as a Founding Creator</button>
-    </form>
-    <p class="form-note">No spam. We’ll only email you about Wortha and early access.</p>
+  <div class="container">
+    <h2 class="section-title">Join the Wortha Waitlist</h2>
+    <p class="section-subtitle">Be one of the first creators to get access — and lock in founding pricing.</p>
+    <div class="card card-elevated">
+      <form action="#" method="post" class="form">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="platform">Primary platform</label>
+          <select id="platform" name="platform">
+            <option value="">Select one</option>
+            <option>TikTok</option>
+            <option>YouTube</option>
+            <option>Instagram</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="followers">Follower count</label>
+          <input id="followers" name="followers" type="text" placeholder="e.g., 24,500" />
+        </div>
+        <button class="btn-primary btn" type="submit">Join as a Founding Creator</button>
+      </form>
+      <p class="form-note">No spam. We’ll only email you about Wortha and early access.</p>
+    </div>
   </div>
 </section>
 
 <section id="faq">
-  <h2 class="section-title">FAQ</h2>
-  <div class="faq">
-    <div class="faq-item">
-      <h4>Who is Wortha for?</h4>
-      <p>Creators with 5K–100K followers who already get or want brand deals.</p>
-    </div>
-    <div class="faq-item">
-      <h4>Do I need an agency to use this?</h4>
-      <p>No. Wortha is built so independent creators can negotiate confidently on their own.</p>
-    </div>
-    <div class="faq-item">
-      <h4>Is this only for one platform?</h4>
-      <p>We support TikTok, YouTube, Instagram, and other social platforms.</p>
-    </div>
-    <div class="faq-item">
-      <h4>When will Wortha launch?</h4>
-      <p>We’re inviting a small group of founding creators first, then opening publicly.</p>
-    </div>
-    <div class="faq-item">
-      <h4>Will my pricing data be shared?</h4>
-      <p>Individual data stays private. Aggregated, anonymized data may be used to improve benchmarks.</p>
+  <div class="container">
+    <h2 class="section-title">FAQ</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h4>Who is Wortha for?</h4>
+        <p>Creators with 5K–100K followers who already get or want brand deals.</p>
+      </div>
+      <div class="card">
+        <h4>Do I need an agency to use this?</h4>
+        <p>No. Wortha is built so independent creators can negotiate confidently on their own.</p>
+      </div>
+      <div class="card">
+        <h4>Is this only for one platform?</h4>
+        <p>We support TikTok, YouTube, Instagram, and other social platforms.</p>
+      </div>
+      <div class="card">
+        <h4>When will Wortha launch?</h4>
+        <p>We’re inviting a small group of founding creators first, then opening publicly.</p>
+      </div>
+      <div class="card">
+        <h4>Will my pricing data be shared?</h4>
+        <p>Individual data stays private. Aggregated, anonymized data may be used to improve benchmarks.</p>
+      </div>
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer">
+  <div class="container">
+    <div class="grid grid-2">
+      <div>
+        <div class="logo">Wortha</div>
+        <p>Know your worth. Charge your worth.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/support">Contact</a>
+      </div>
+    </div>
+    <p class="form-note">© 2026 Wortha. All rights reserved.</p>
+  </div>
+</footer>
 {% endblock %}

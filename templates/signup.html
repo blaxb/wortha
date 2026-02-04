@@ -1,25 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="card">
-  <h2>Create your account</h2>
-  {% if error %}
-    <p class="error">{{ error }}</p>
-  {% endif %}
-  <form action="/signup" method="post" class="form">
-    <label>Email
-      <input type="email" name="email" required />
-    </label>
-    <label>Username
-      <input type="text" name="username" required />
-    </label>
-    <label>Password
-      <input type="password" name="password" required />
-    </label>
-    <label>Confirm password
-      <input type="password" name="confirm_password" required />
-    </label>
-    <button class="btn" type="submit">Sign up</button>
-  </form>
-</section>
+<div class="container auth-shell">
+  <section class="card auth-card">
+    <div class="page-header">
+      <h2>Create your account</h2>
+      <p>Start pricing with confidence in minutes.</p>
+    </div>
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    <form action="/signup" method="post" class="form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" required />
+      </div>
+      <div class="form-group">
+        <label>Confirm password</label>
+        <input type="password" name="confirm_password" required />
+      </div>
+      <button class="btn btn-primary" type="submit">Sign up</button>
+    </form>
+    <p class="form-note">Already have an account? <a href="/login">Log in</a></p>
+  </section>
+</div>
 {% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h2>Community Rate Index</h2>
+    <p>Anonymized deal data from creators like you. Filter by niche, platform, follower tier, and region.</p>
+    <span class="badge">Plan: {{ user.plan|capitalize }}</span>
+    <p class="muted">You’re seeing anonymized community data. Nothing here reveals individual creators or brands.</p>
+  </div>
+
+  {% if needs_contribution %}
+    <section class="card">
+      <p>To unlock the Community Rate Index, log at least one recent sponsorship deal and opt-in to share it anonymously.</p>
+      <a class="btn btn-primary" href="/deals/new">Log a deal</a>
+    </section>
+  {% else %}
+    <section class="card">
+      <h3>Filters</h3>
+      <form class="form" method="get" action="/rate-index">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Platform</label>
+            {% set platform_value = filters.platform %}
+            <select name="platform">
+              <option value="">All</option>
+              {% for value, label in PLATFORMS %}
+                <option value="{{ value }}" {% if platform_value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Follower tier</label>
+            {% set tier_value = filters.follower_tier %}
+            <select name="follower_tier">
+              <option value="">All</option>
+              {% for value, label in FOLLOWER_TIERS %}
+                <option value="{{ value }}" {% if tier_value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Niche</label>
+            {% set niche_value = filters.niche %}
+            <select name="niche">
+              <option value="">All</option>
+              {% for value, label in NICHES %}
+                <option value="{{ value }}" {% if niche_value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Geo region</label>
+            {% set geo_value = filters.geo_region %}
+            <select name="geo_region">
+              <option value="">All</option>
+              {% for value, label in GEO_REGIONS %}
+                <option value="{{ value }}" {% if geo_value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Deal type</label>
+            {% set deal_type_value = filters.deal_type %}
+            <select name="deal_type">
+              <option value="">All</option>
+              {% for value, label in DEAL_TYPES %}
+                <option value="{{ value }}" {% if deal_type_value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Timeframe</label>
+            {% set timeframe_value = filters.timeframe %}
+            <select name="timeframe">
+              <option value="3m" {% if timeframe_value == "3m" %}selected{% endif %}>Last 3 months</option>
+              <option value="6m" {% if timeframe_value == "6m" %}selected{% endif %}>Last 6 months</option>
+              <option value="12m" {% if timeframe_value == "12m" %}selected{% endif %}>Last 12 months</option>
+              <option value="all" {% if timeframe_value == "all" %}selected{% endif %}>All time</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-secondary" type="submit">Apply filters</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h3>Summary</h3>
+      {% if fee_summary.count == 0 %}
+        <p>No deals match these filters yet. Try widening your search.</p>
+      {% else %}
+        <div class="stats-grid">
+          <div><strong>Deals included:</strong> {{ fee_summary.count }}</div>
+          <div><strong>Average deal:</strong> {% if fee_summary.avg is not none %}${{ fee_summary.avg | round(0) }}{% else %}—{% endif %}</div>
+          <div><strong>Median deal:</strong> {% if fee_summary.median is not none %}${{ fee_summary.median | round(0) }}{% else %}—{% endif %}</div>
+          <div><strong>Range:</strong> {% if fee_summary.min is not none %}${{ fee_summary.min | round(0) }}{% else %}—{% endif %} – {% if fee_summary.max is not none %}${{ fee_summary.max | round(0) }}{% else %}—{% endif %}</div>
+          {% if cpm_summary %}
+            <div><strong>Avg CPM:</strong> {% if cpm_summary.avg is not none %}${{ cpm_summary.avg | round(2) }}{% else %}—{% endif %}</div>
+            <div><strong>Median CPM:</strong> {% if cpm_summary.median is not none %}${{ cpm_summary.median | round(2) }}{% else %}—{% endif %}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Niche</th>
+              <th>Follower tier</th>
+              <th>Geo region</th>
+              <th>Deal type</th>
+              <th>Content format</th>
+              <th>Deliverables</th>
+              <th class="text-right">Total fee (USD)</th>
+              <th class="text-right">Effective CPM</th>
+              <th>Month</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in contributions %}
+              <tr>
+                <td>{{ platform_label(item.platform) }}</td>
+                <td>{{ niche_label(item.niche) if item.niche else "—" }}</td>
+                <td>{{ follower_tier_label(item.follower_tier) }}</td>
+                <td>{{ geo_region_label(item.geo_region) if item.geo_region else "—" }}</td>
+                <td>{{ deal_type_label(item.deal_type) if item.deal_type else "—" }}</td>
+                <td>{{ content_format_label(item.content_format) if item.content_format else "—" }}</td>
+                <td>{{ (item.deliverables or "")[:80] }}{% if item.deliverables and item.deliverables|length > 80 %}…{% endif %}</td>
+                <td class="text-right">${{ item.total_fee_usd | round(0) }}</td>
+                <td class="text-right">
+                  {% if item.reported_views and item.reported_views > 0 and item.total_fee_usd %}
+                    {{ ((item.total_fee_usd / item.reported_views) * 1000) | round(2) }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td>{{ item.created_at.strftime("%b %Y") if item.created_at else "" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

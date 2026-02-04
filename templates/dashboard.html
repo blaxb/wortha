@@ -1,9 +1,78 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="card">
-  <h2>Welcome, {{ user.username }}</h2>
-  <p>Your pricing workspace is ready.</p>
-  <a class="btn" href="/calculator">Open Free Pricing Calculator</a>
-</section>
+<div class="container">
+  <div class="page-header">
+    <h2>Welcome back, {{ user.username or user.email }}</h2>
+    <p>Your pricing workspace is ready. Current plan: <strong>{{ user.plan|capitalize }}</strong></p>
+  </div>
+
+  <div class="grid grid-3">
+    <section class="card">
+      <h3>Pricing Calculator</h3>
+      <p>Get a fair sponsorship range in seconds.</p>
+      <a class="btn btn-secondary" href="/calculator">Open calculator</a>
+    </section>
+    <section class="card">
+      <h3>Media Kit</h3>
+      <p>Generate a professional PDF for brands.</p>
+      {% if user.plan and user.plan|lower in ["pro", "premium"] %}
+        <a class="btn btn-secondary" href="/media-kit">Open media kit</a>
+      {% else %}
+        <span class="badge">Pro</span>
+        <a class="btn btn-secondary" href="/upgrade?reason=media-kit">Unlock with Pro</a>
+      {% endif %}
+    </section>
+    <section class="card">
+      <h3>Negotiation Assistant</h3>
+      <p>Evaluate offers and draft counters fast.</p>
+      {% if user.plan and user.plan|lower == "premium" %}
+        <a class="btn btn-secondary" href="/negotiation">Open negotiation</a>
+      {% else %}
+        <span class="badge">Premium</span>
+        <a class="btn btn-secondary" href="/upgrade?reason=negotiation">Unlock with Premium</a>
+      {% endif %}
+    </section>
+    <section class="card">
+      <h3>Community Rate Index</h3>
+      <p>See what creators like you are charging.</p>
+      {% if user.plan and user.plan|lower == "premium" %}
+        <a class="btn btn-secondary" href="/rate-index">Open rate index</a>
+      {% else %}
+        <span class="badge">Premium</span>
+        <a class="btn btn-secondary" href="/upgrade?reason=rate-index">Unlock with Premium</a>
+      {% endif %}
+    </section>
+    <section class="card">
+      <h3>Analytics</h3>
+      <p>Track revenue, close rates, and trends.</p>
+      {% if user.plan and user.plan|lower in ["pro", "premium"] %}
+        <a class="btn btn-secondary" href="/analytics">View analytics</a>
+      {% else %}
+        <span class="badge">Pro</span>
+        <a class="btn btn-secondary" href="/upgrade?reason=analytics">Unlock with Pro</a>
+      {% endif %}
+    </section>
+    <section class="card">
+      <h3>AI Insights</h3>
+      <p>Get tailored recommendations from your data.</p>
+      <a class="btn btn-secondary" href="/insights">View insights</a>
+    </section>
+    <section class="card">
+      <h3>Log a Deal</h3>
+      <p>Track closed sponsorships and build history.</p>
+      <a class="btn btn-secondary" href="/deals/new">Log a deal</a>
+    </section>
+    <section class="card">
+      <h3>Quarterly Niche Reports</h3>
+      <p>See how CPMs and deal sizes are trending.</p>
+      {% if user.plan and user.plan|lower == "premium" %}
+        <a class="btn btn-secondary" href="/reports/niche">View reports</a>
+      {% else %}
+        <span class="badge">Premium</span>
+        <a class="btn btn-secondary" href="/upgrade?reason=niche-reports">Unlock with Premium</a>
+      {% endif %}
+    </section>
+  </div>
+</div>
 {% endblock %}
