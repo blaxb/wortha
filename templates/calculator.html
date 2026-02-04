@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header page-hero">
   <h2>Pricing Calculator</h2>
   <p>Estimate a fair sponsorship range using a CPM-based model.</p>
 </div>
 
 <div class="grid-two">
-  <section class="card">
+  <section class="card card-accent">
     <h3>Your inputs</h3>
     <form class="form" action="/calculator" method="post">
       <div class="form-group">
@@ -70,7 +70,7 @@
     </form>
   </section>
 
-  <section class="card">
+  <section class="card card-accent">
     <h3>Recommended rate</h3>
     {% if limit_reached %}
       <p>{{ message }}</p>

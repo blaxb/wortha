@@ -1,20 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="page-header">
-  <h2>Welcome back, {{ user.username or user.email }}</h2>
-  <p>What do you want to do today? Current plan: <strong>{{ user.plan|capitalize }}</strong></p>
-</div>
+<section class="dashboard-hero">
+  <div class="dashboard-hero-inner">
+    <p class="eyebrow">Creator pricing workspace</p>
+    <h1>Welcome back, {{ user.username or user.email }}</h1>
+    <p class="hero-subtitle">
+      What do you want to do today? Current plan:
+      <span class="plan-pill">{{ user.plan|capitalize }}</span>
+    </p>
+  </div>
+</section>
 
-<div class="grid grid-3">
-  <section class="card">
-    <h3>Pricing Calculator</h3>
-    <p>Get a fair sponsorship range in seconds.</p>
+<div class="dashboard-grid">
+  <section class="card card-accent dashboard-tile">
+    <div class="tile-header">
+      <div class="tile-icon">📊</div>
+      <div>
+        <h3>Pricing Calculator</h3>
+        <p class="tile-subtitle">Get a fair sponsorship range in seconds.</p>
+      </div>
+    </div>
     <a class="btn btn-secondary" href="/calculator">Open</a>
   </section>
-  <section class="card">
-    <h3>Media Kit Generator</h3>
-    <p>Generate a professional PDF for brands.</p>
+  <section class="card card-accent dashboard-tile">
+    <div class="tile-header">
+      <div class="tile-icon">📄</div>
+      <div>
+        <h3>Media Kit Generator</h3>
+        <p class="tile-subtitle">Generate a professional PDF for brands.</p>
+      </div>
+    </div>
     {% if user.plan and user.plan|lower in ["pro", "premium"] %}
       <a class="btn btn-secondary" href="/media-kit">Open</a>
     {% else %}
@@ -22,9 +38,14 @@
       <a class="btn btn-secondary" href="/upgrade?reason=media-kit">Unlock with Pro</a>
     {% endif %}
   </section>
-  <section class="card">
-    <h3>Negotiation Assistant</h3>
-    <p>Evaluate offers and draft counters fast.</p>
+  <section class="card card-accent dashboard-tile">
+    <div class="tile-header">
+      <div class="tile-icon">🤝</div>
+      <div>
+        <h3>Negotiation Assistant</h3>
+        <p class="tile-subtitle">Evaluate offers and draft counters fast.</p>
+      </div>
+    </div>
     {% if user.plan and user.plan|lower == "premium" %}
       <a class="btn btn-secondary" href="/negotiation">Open</a>
     {% else %}
@@ -32,9 +53,14 @@
       <a class="btn btn-secondary" href="/upgrade?reason=negotiation">Unlock with Premium</a>
     {% endif %}
   </section>
-  <section class="card">
-    <h3>Community Rate Index</h3>
-    <p>See what creators like you are charging.</p>
+  <section class="card card-accent dashboard-tile">
+    <div class="tile-header">
+      <div class="tile-icon">🌐</div>
+      <div>
+        <h3>Community Rate Index</h3>
+        <p class="tile-subtitle">See what creators like you are charging.</p>
+      </div>
+    </div>
     {% if user.plan and user.plan|lower == "premium" %}
       <a class="btn btn-secondary" href="/rate-index">Open</a>
     {% else %}
@@ -42,9 +68,14 @@
       <a class="btn btn-secondary" href="/upgrade?reason=rate-index">Unlock with Premium</a>
     {% endif %}
   </section>
-  <section class="card">
-    <h3>Analytics</h3>
-    <p>Track revenue, close rates, and trends.</p>
+  <section class="card card-accent dashboard-tile">
+    <div class="tile-header">
+      <div class="tile-icon">📈</div>
+      <div>
+        <h3>Analytics</h3>
+        <p class="tile-subtitle">Track revenue, close rates, and trends.</p>
+      </div>
+    </div>
     {% if user.plan and user.plan|lower in ["pro", "premium"] %}
       <a class="btn btn-secondary" href="/analytics">Open</a>
     {% else %}
@@ -52,15 +83,26 @@
       <a class="btn btn-secondary" href="/upgrade?reason=analytics">Unlock with Pro</a>
     {% endif %}
   </section>
-  <section class="card">
-    <h3>AI Insights</h3>
-    <p>Get tailored recommendations from your data.</p>
+  <section class="card card-accent dashboard-tile">
+    <div class="tile-header">
+      <div class="tile-icon">✨</div>
+      <div>
+        <h3>AI Insights</h3>
+        <p class="tile-subtitle">Get tailored recommendations from your data.</p>
+      </div>
+    </div>
     <a class="btn btn-secondary" href="/insights">Open</a>
   </section>
 </div>
 
-<section class="card">
-  <h3>Billing</h3>
+<section class="card card-accent-secondary">
+  <div class="tile-header">
+    <div class="tile-icon">💳</div>
+    <div>
+      <h3>Billing</h3>
+      <p class="tile-subtitle">Manage your plan and subscription.</p>
+    </div>
+  </div>
   <p>Current plan: <strong>{{ user.plan|capitalize }}</strong></p>
   {% if user.plan and user.plan|lower in ["starter", "pro", "premium"] %}
     <a class="btn btn-secondary" href="/billing/portal">Manage billing</a>

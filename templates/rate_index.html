@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header page-hero">
   <h2>Community Rate Index</h2>
   <p>Anonymized deal data from creators like you. Filter by niche, platform, follower tier, and region.</p>
   <span class="badge">Plan: {{ user.plan|capitalize }}</span>
@@ -9,12 +9,12 @@
 </div>
 
 {% if needs_contribution %}
-  <section class="card">
+  <section class="card card-accent">
     <p>To unlock the Community Rate Index, log at least one recent sponsorship deal and opt-in to share it anonymously.</p>
     <a class="btn btn-primary" href="/deals/new">Log a deal</a>
   </section>
 {% else %}
-  <section class="card">
+  <section class="card card-accent">
     <h3>Filters</h3>
     <form class="form" method="get" action="/rate-index">
       <div class="form-grid">
@@ -83,7 +83,7 @@
     </form>
   </section>
 
-  <section class="card">
+  <section class="card card-accent">
     <h3>Summary</h3>
     {% if fee_summary.count == 0 %}
       <div class="card card-muted">
@@ -103,7 +103,7 @@
     {% endif %}
   </section>
 
-  <section class="card">
+  <section class="card card-accent">
     <div class="table-wrap">
       <table>
         <thead>

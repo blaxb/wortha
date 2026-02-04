@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header page-hero">
   <h2>Performance Analytics</h2>
   <p>Track your sponsorship revenue, pricing performance, and negotiation outcomes over time.</p>
   <span class="badge">Plan: {{ user.plan|capitalize }}</span>
 </div>
 
-<section class="card">
+<section class="card card-accent">
   <h3>Summary</h3>
   <div class="stats-grid">
     <div><strong>Deals logged:</strong> {{ analytics.deals_summary.deals_count }}</div>
@@ -39,7 +39,7 @@
 </section>
 
 <div class="grid-two">
-  <section class="card">
+  <section class="card card-accent">
     <h3>Quoted vs closed</h3>
     {% if analytics.flags.has_quoted_vs_closed %}
       <p>
@@ -57,7 +57,7 @@
   </section>
 
   {% if analytics.negotiation_summary.negotiation_count > 0 %}
-    <section class="card">
+    <section class="card card-accent">
       <h3>Negotiation uplift</h3>
       <p>Negotiations logged: {{ analytics.negotiation_summary.negotiation_count }}</p>
       {% if analytics.flags.has_negotiation_uplift and analytics.negotiation_summary.avg_uplift_pct is not none %}
@@ -76,7 +76,7 @@
   {% endif %}
 </div>
 
-<section class="card">
+<section class="card card-accent">
   <h3>Breakdowns</h3>
   <div class="grid-two">
     <div>
@@ -140,7 +140,7 @@
   </div>
 </section>
 
-<section class="card">
+<section class="card card-accent">
   <h3>Monthly trend</h3>
   {% if analytics.monthly_trend %}
     <div class="table-wrap">

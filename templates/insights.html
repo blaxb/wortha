@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header page-hero">
   <h2>AI Insights for Your Creator Business</h2>
   <p>Based on your deals, negotiations, and pricing data.</p>
   <span class="badge">Plan: {{ user.plan|capitalize }}</span>
 </div>
 
 {% if user.plan|lower == "free" %}
-  <section class="card">
+  <section class="card card-accent">
     <p><strong>Get deeper, niche-specific insights with Pro and Premium.</strong></p>
     <a class="btn btn-secondary" href="/upgrade">Upgrade</a>
   </section>
 {% endif %}
 
-<section class="card">
+<section class="card card-accent">
   <h3>Stats overview</h3>
   <div class="stats-grid">
     <div>Deals logged: {{ overview.deals_logged or 0 }}</div>
@@ -29,7 +29,7 @@
   {% endif %}
 </section>
 
-<section class="card">
+<section class="card card-accent">
   <h3>AI Insights</h3>
   {% if insights_result.status == "no_data" %}
     <div class="notice">
