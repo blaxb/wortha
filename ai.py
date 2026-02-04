@@ -3,16 +3,65 @@ from __future__ import annotations
 import json
 import logging
 from statistics import median
+from datetime import datetime
+import os
 from typing import Any
 
 from openai import OpenAI
 from sqlmodel import Session, select
 
-from models import Calculation, CreatorProfile, DealContribution, NegotiationSession
+from models import (
+    Calculation,
+    CreatorProfile,
+    DealContribution,
+    NegotiationSession,
+    AiUsage,
+)
 
 logger = logging.getLogger(__name__)
 
 client = OpenAI()
+
+
+def calculator_ai_enabled() -> bool:
+    return os.environ.get("CALCULATOR_AI_ENABLED", "true").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def reserve_calculator_ai_call(
+    session: Session, feature: str = "calculator", daily_cap: int | None = None
+) -> bool:
+    cap = daily_cap
+    if cap is None:
+        try:
+            cap = int(os.environ.get("CALCULATOR_AI_DAILY_CAP", "500"))
+        except ValueError:
+            cap = 500
+    if cap <= 0:
+        return False
+
+    usage_date = datetime.utcnow().date().isoformat()
+    statement = select(AiUsage).where(
+        AiUsage.usage_date == usage_date, AiUsage.feature == feature
+    )
+    usage_row = session.exec(statement).first()
+    if not usage_row:
+        usage_row = AiUsage(usage_date=usage_date, feature=feature, call_count=0)
+        session.add(usage_row)
+        session.commit()
+        session.refresh(usage_row)
+
+    if usage_row.call_count >= cap:
+        return False
+
+    usage_row.call_count += 1
+    session.add(usage_row)
+    session.commit()
+    return True
 
 
 def _safe_median(values: list[float]) -> float | None:
@@ -246,3 +295,60 @@ def generate_niche_report(stats: dict[str, Any]) -> str:
         return (
             "We couldn’t generate a full AI report right now. Here are the raw numbers instead."
         )
+
+
+def generate_pricing_explanation(
+    platform: str,
+    niche: str,
+    deal_type: str,
+    follower_count: int,
+    avg_views: int,
+    engagement_rate: float,
+    geo: str,
+    base_cpm: float,
+    niche_multiplier: float,
+    engagement_multiplier: float,
+    geo_multiplier: float,
+    effective_cpm: float,
+    recommended_price: float,
+    low_price: float,
+    high_price: float,
+) -> str:
+    instructions = (
+        "You are a pricing assistant for creators. Write a single, concise paragraph "
+        "explaining the recommended rate. Requirements:\n"
+        "- 1 paragraph, 1-3 sentences, no lists.\n"
+        "- Include platform, niche, and deal type explicitly.\n"
+        "- Include the recommended price and range, with the recommended price wrapped "
+        "in <strong> tags.\n"
+        "- Mention base CPM and the effective CPM after multipliers.\n"
+        "- If follower count or avg views are unusually low or high, briefly mention it.\n"
+        "- No extra formatting beyond <strong> tags."
+    )
+
+    payload = {
+        "platform": platform,
+        "niche": niche,
+        "deal_type": deal_type,
+        "follower_count": follower_count,
+        "avg_views": avg_views,
+        "engagement_rate_pct": engagement_rate,
+        "geo": geo,
+        "base_cpm": base_cpm,
+        "niche_multiplier": niche_multiplier,
+        "engagement_multiplier": engagement_multiplier,
+        "geo_multiplier": geo_multiplier,
+        "effective_cpm": effective_cpm,
+        "recommended_price": recommended_price,
+        "low_price": low_price,
+        "high_price": high_price,
+    }
+
+    response = client.responses.create(
+        model="gpt-4o-mini",
+        instructions=instructions,
+        input=json.dumps(payload, ensure_ascii=False),
+        max_output_tokens=140,
+        temperature=0.2,
+    )
+    return response.output_text.strip()

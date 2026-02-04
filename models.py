@@ -42,11 +42,21 @@ class Calculation(SQLModel, table=True):
     followers: Optional[int] = None
     avg_views: Optional[int] = None
     engagement_rate: Optional[float] = None
+    recommended_price: Optional[float] = None
     recommended_min: float
     recommended_max: float
     cpmm_base: float
     engagement_multiplier: float
     geo_multiplier: float
+    ai_explanation: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AiUsage(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    usage_date: str = Field(index=True)
+    feature: str = Field(index=True)
+    call_count: int = Field(default=0)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -209,6 +219,8 @@ def ensure_optional_columns_exist() -> None:
             "niche_other": "TEXT",
             "deal_type_other": "TEXT",
             "geo_region": "TEXT",
+            "recommended_price": "REAL",
+            "ai_explanation": "TEXT",
         },
         "creator_profile": {
             "primary_platform_other": "TEXT",

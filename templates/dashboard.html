@@ -12,10 +12,33 @@
   </div>
 </section>
 
+<section class="stats-grid">
+  <div class="card card-muted">
+    <h4>Plan overview</h4>
+    <p class="muted">You are on the {{ user.plan|capitalize }} plan.</p>
+    <a class="btn btn-secondary" href="/upgrade">Compare plans</a>
+  </div>
+  <div class="card card-muted">
+    <h4>Quick action</h4>
+    <p class="muted">Run a fresh pricing calculation in seconds.</p>
+    <a class="btn btn-secondary" href="/calculator">Start calculation</a>
+  </div>
+  <div class="card card-muted">
+    <h4>Billing</h4>
+    <p class="muted">Manage invoices or update your subscription.</p>
+    <a class="btn btn-secondary" href="/billing/portal">Manage billing</a>
+  </div>
+</section>
+
 <div class="grid grid-3">
   <section class="card card-accent dashboard-tile">
     <div class="tile-header">
-      <div class="tile-icon">📊</div>
+      <div class="tile-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 3v18h18" />
+          <path d="M7 13l4-4 3 3 5-6" />
+        </svg>
+      </div>
       <div>
         <h3>Pricing Calculator</h3>
         <p class="tile-subtitle">Get a fair sponsorship range in seconds.</p>
@@ -25,7 +48,12 @@
   </section>
   <section class="card card-accent dashboard-tile">
     <div class="tile-header">
-      <div class="tile-icon">📄</div>
+      <div class="tile-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+          <path d="M14 2v6h6" />
+        </svg>
+      </div>
       <div>
         <h3>Media Kit Generator</h3>
         <p class="tile-subtitle">Generate a professional PDF for brands.</p>
@@ -40,7 +68,13 @@
   </section>
   <section class="card card-accent dashboard-tile">
     <div class="tile-header">
-      <div class="tile-icon">🤝</div>
+      <div class="tile-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 10l5 5 5-5" />
+          <path d="M12 15V5" />
+          <path d="M21 19H3" />
+        </svg>
+      </div>
       <div>
         <h3>Negotiation Assistant</h3>
         <p class="tile-subtitle">Evaluate offers and draft counters fast.</p>
@@ -55,7 +89,13 @@
   </section>
   <section class="card card-accent dashboard-tile">
     <div class="tile-header">
-      <div class="tile-icon">🌐</div>
+      <div class="tile-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18" />
+          <path d="M12 3a15.3 15.3 0 0 1 0 18" />
+        </svg>
+      </div>
       <div>
         <h3>Community Rate Index</h3>
         <p class="tile-subtitle">See what creators like you are charging.</p>
@@ -70,7 +110,12 @@
   </section>
   <section class="card card-accent dashboard-tile">
     <div class="tile-header">
-      <div class="tile-icon">📈</div>
+      <div class="tile-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 3v18h18" />
+          <path d="M7 15l4-4 3 3 5-5" />
+        </svg>
+      </div>
       <div>
         <h3>Analytics</h3>
         <p class="tile-subtitle">Track revenue, close rates, and trends.</p>
@@ -85,7 +130,12 @@
   </section>
   <section class="card card-accent dashboard-tile">
     <div class="tile-header">
-      <div class="tile-icon">✨</div>
+      <div class="tile-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l1.8 4.5L18 9l-4.2 1.5L12 15l-1.8-4.5L6 9l4.2-1.5z" />
+          <path d="M19 16l.9 2.2L22 19l-2.1.8L19 22l-.9-2.2L16 19l2.1-.8z" />
+        </svg>
+      </div>
       <div>
         <h3>AI Insights</h3>
         <p class="tile-subtitle">Get tailored recommendations from your data.</p>
@@ -95,9 +145,27 @@
   </section>
 </div>
 
+<section class="card">
+  <div class="card-header">
+    <div>
+      <h3>Recent calculations</h3>
+      <p class="muted">Review your latest pricing work.</p>
+    </div>
+    <a class="btn btn-secondary" href="/calculations">View history</a>
+  </div>
+  <div class="empty-state">
+    <p>No calculations yet. Run your first pricing estimate to populate this feed.</p>
+  </div>
+</section>
+
 <section class="card card-accent-secondary">
   <div class="tile-header">
-    <div class="tile-icon">💳</div>
+    <div class="tile-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <path d="M2 10h20" />
+      </svg>
+    </div>
     <div>
       <h3>Billing</h3>
       <p class="tile-subtitle">Manage your plan and subscription.</p>

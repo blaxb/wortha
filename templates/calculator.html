@@ -6,7 +6,7 @@
   <p>Estimate a fair sponsorship range using a CPM-based model.</p>
 </div>
 
-<div class="grid-two">
+<div class="calculator-layout">
   <section class="card card-accent">
     <h3>Your inputs</h3>
     <form class="form" action="/calculator" method="post">
@@ -67,16 +67,21 @@
         </select>
       </div>
       <button class="btn btn-primary" type="submit">Calculate my rate</button>
+      {% if is_free_plan %}
+        <p class="form-note">Free plan: 3 calculations per month. <a href="/upgrade">Upgrade for unlimited access.</a></p>
+      {% endif %}
     </form>
   </section>
 
-  <section class="card card-accent">
+  <section class="card card-accent results-panel">
     <h3>Recommended rate</h3>
     {% if limit_reached %}
-      <p>{{ message }}</p>
-      <a class="btn btn-secondary" href="/upgrade">Upgrade to Pro</a>
+      <p class="alert alert-danger">{{ message }}</p>
+      <a class="btn btn-secondary" href="/upgrade">Upgrade</a>
     {% elif result %}
-      <p>Based on your metrics, we recommend charging <strong>${{ '%.2f'|format(result.recommended_min) }}</strong> – <strong>${{ '%.2f'|format(result.recommended_max) }}</strong> for this deal.</p>
+      <div class="result-highlight rich-text">
+        {{ ai_explanation | safe }}
+      </div>
       <h4>Breakdown</h4>
       <ul>
         <li>Base CPM for {{ platform_label(platform) }}: ${{ '%.2f'|format(result.base_cpm) }}</li>
@@ -89,7 +94,7 @@
         {% endif %}
       </ul>
     {% else %}
-      <div class="card card-muted">
+      <div class="empty-state">
         <p>Fill out your inputs to see your recommended rate range.</p>
       </div>
     {% endif %}

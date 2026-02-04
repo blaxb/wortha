@@ -26,7 +26,8 @@
             <th>Deal type</th>
             <th>Followers</th>
             <th>Avg views</th>
-            <th>Recommended range</th>
+            <th>Recommended</th>
+            <th>Explanation</th>
           </tr>
         </thead>
         <tbody>
@@ -38,7 +39,23 @@
               <td>{{ deal_type_label(item.deal_type) }}</td>
               <td>{{ item.followers or "—" }}</td>
               <td>{{ item.avg_views or "—" }}</td>
-              <td>${{ '%.2f'|format(item.recommended_min) }} – ${{ '%.2f'|format(item.recommended_max) }}</td>
+              <td>
+                {% if item.recommended_price is not none %}
+                  ${{ '%.2f'|format(item.recommended_price) }}
+                  <span class="form-note">(${{
+                    '%.2f'|format(item.recommended_min)
+                  }}–${{ '%.2f'|format(item.recommended_max) }})</span>
+                {% else %}
+                  ${{ '%.2f'|format(item.recommended_min) }} – ${{ '%.2f'|format(item.recommended_max) }}
+                {% endif %}
+              </td>
+              <td>
+                {% if item.ai_explanation %}
+                  {{ item.ai_explanation | safe }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
             </tr>
           {% endfor %}
         </tbody>

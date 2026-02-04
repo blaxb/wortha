@@ -11,6 +11,7 @@ from fastapi import Depends, FastAPI, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import func
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from starlette.middleware.sessions import SessionMiddleware
@@ -68,7 +69,14 @@ from models import (
     link_negotiation_to_deal,
 )
 from analytics_helpers import build_quarterly_niche_stats, build_user_analytics
-from ai import build_creator_stats, generate_creator_insights, generate_niche_report
+from ai import (
+    build_creator_stats,
+    generate_creator_insights,
+    generate_niche_report,
+    generate_pricing_explanation,
+    calculator_ai_enabled,
+    reserve_calculator_ai_call,
+)
 from stats_helpers import (
     get_bucket_community_pricing,
     summarize_cpm_outlier_safe,
@@ -168,6 +176,24 @@ def calculate_rate(
     engagement_rate: Optional[float],
     geo_region: str,
 ):
+    def round_price(value: float, increment: int = 5) -> float:
+        if value <= 0:
+            return 0.0
+        return float(int((value + increment / 2) // increment) * increment)
+
+    def price_band(center: float, engagement: Optional[float]) -> tuple[float, float]:
+        low_multiplier = 0.9
+        high_multiplier = 1.1
+        if engagement is not None:
+            if engagement >= 6:
+                high_multiplier = 1.2
+            elif engagement >= 4:
+                high_multiplier = 1.15
+            elif engagement < 1:
+                low_multiplier = 0.85
+                high_multiplier = 1.05
+        return center * low_multiplier, center * high_multiplier
+
     platform_cpm = {
         "youtube": 15,
         "instagram": 12,
@@ -225,11 +251,14 @@ def calculate_rate(
         views = int(followers * 0.1)
 
     effective_cpm = base_cpm * niche_multiplier * engagement_multiplier * geo_multiplier
-    base_rate = (views / 1000) * effective_cpm if views else 0
-    recommended_min = base_rate * 0.8
-    recommended_max = base_rate * 1.2
+    central_price = (views / 1000) * effective_cpm if views else 0
+    low_price, high_price = price_band(central_price, engagement_rate)
+    recommended_price = round_price(central_price)
+    recommended_min = round_price(low_price)
+    recommended_max = round_price(high_price)
 
     return {
+        "recommended_price": recommended_price,
         "recommended_min": recommended_min,
         "recommended_max": recommended_max,
         "base_cpm": base_cpm,
@@ -414,13 +443,16 @@ def calculator(
     request: Request,
     user: User = Depends(get_current_user),
 ):
-    is_pro_or_premium = (user.plan or "free").lower() in {"pro", "premium"}
+    normalized_plan = (user.plan or "free").lower()
+    is_pro_or_premium = normalized_plan in {"pro", "premium"}
+    is_free_plan = normalized_plan == "free"
     return templates.TemplateResponse(
         "calculator.html",
         {
             "request": request,
             "user": user,
             "is_pro_or_premium": is_pro_or_premium,
+            "is_free_plan": is_free_plan,
             "result": None,
             "limit_reached": False,
             "message": None,
@@ -434,6 +466,7 @@ def calculator(
             "engagement_rate": None,
             "geo_region": "us",
             "community_note": None,
+            "ai_explanation": None,
         },
     )
 
@@ -1082,6 +1115,8 @@ def calculator_submit(
     session: Session = Depends(get_session),
     user: User = Depends(get_current_user),
 ):
+    import html
+
     def to_int(value: Optional[str]) -> Optional[int]:
         if value is None or value.strip() == "":
             return None
@@ -1102,7 +1137,9 @@ def calculator_submit(
     avg_views_value = to_int(avg_views)
     engagement_value = to_float(engagement_rate)
 
-    is_pro_or_premium = (user.plan or "free").lower() in {"pro", "premium"}
+    normalized_plan = (user.plan or "free").lower()
+    is_pro_or_premium = normalized_plan in {"pro", "premium"}
+    is_free_plan = normalized_plan == "free"
 
     now = datetime.utcnow()
     month_start = datetime(now.year, now.month, 1)
@@ -1111,13 +1148,17 @@ def calculator_submit(
     else:
         next_month = datetime(now.year, now.month + 1, 1)
 
-    if not is_pro_or_premium:
-        statement = select(Calculation).where(
-            Calculation.user_id == user.id,
-            Calculation.created_at >= month_start,
-            Calculation.created_at < next_month,
+    if is_free_plan:
+        statement = (
+            select(func.count())
+            .select_from(Calculation)
+            .where(
+                Calculation.user_id == user.id,
+                Calculation.created_at >= month_start,
+                Calculation.created_at < next_month,
+            )
         )
-        month_count = len(session.exec(statement).all())
+        month_count = session.exec(statement).one() or 0
 
         if month_count >= 3:
             return templates.TemplateResponse(
@@ -1126,9 +1167,13 @@ def calculator_submit(
                     "request": request,
                     "user": user,
                     "is_pro_or_premium": is_pro_or_premium,
+                    "is_free_plan": is_free_plan,
                     "result": None,
                     "limit_reached": True,
-                    "message": "You’ve reached your 3 free calculations for this month. Upgrade to Pro to unlock unlimited pricing calculations.",
+                    "message": (
+                        "You’ve used your 3 free calculations this month. "
+                        "Upgrade to Starter or Pro for unlimited pricing runs."
+                    ),
                 },
             )
 
@@ -1168,7 +1213,7 @@ def calculator_submit(
 
     baseline_min = float(result["recommended_min"])
     baseline_max = float(result["recommended_max"])
-    baseline_mid = (baseline_min + baseline_max) / 2 if (baseline_min + baseline_max) > 0 else 0
+    baseline_mid = float(result.get("recommended_price") or 0)
 
     if (
         community_pricing
@@ -1180,12 +1225,81 @@ def calculator_submit(
         ratio = community_mid / baseline_mid if baseline_mid > 0 else 0
         if 0.5 <= ratio <= 2.0:
             final_mid = (0.6 * baseline_mid) + (0.4 * community_mid)
-            result["recommended_min"] = final_mid * 0.8
-            result["recommended_max"] = final_mid * 1.2
+            result["recommended_price"] = float(
+                int((final_mid + 2.5) // 5) * 5
+            )
+            low_multiplier = 0.9
+            high_multiplier = 1.1
+            if engagement_value is not None:
+                if engagement_value >= 6:
+                    high_multiplier = 1.2
+                elif engagement_value >= 4:
+                    high_multiplier = 1.15
+                elif engagement_value < 1:
+                    low_multiplier = 0.85
+                    high_multiplier = 1.05
+            result["recommended_min"] = float(
+                int(((final_mid * low_multiplier) + 2.5) // 5) * 5
+            )
+            result["recommended_max"] = float(
+                int(((final_mid * high_multiplier) + 2.5) // 5) * 5
+            )
             community_note = (
                 f"Community data: Based on {community_pricing['deal_count']} deals in your niche/tier, "
                 f"typical closed deals are around ${community_mid:,.0f}. We’ve adjusted your recommendation slightly toward this."
             )
+
+    explanation = None
+    platform_name = platform_label(platform_code)
+    niche_name = niche_label(niche_code)
+    deal_type_name = deal_type_label(deal_type_code)
+    engagement_text = (
+        f"{engagement_value:.1f}%" if engagement_value is not None else "an unknown rate"
+    )
+    geo_name = geo_region_label(geo_region_code)
+    recommended_price = float(result["recommended_price"])
+    recommended_low = float(result["recommended_min"])
+    recommended_high = float(result["recommended_max"])
+
+    if calculator_ai_enabled() and reserve_calculator_ai_call(session, "calculator"):
+        try:
+            explanation = generate_pricing_explanation(
+                platform=platform_name,
+                niche=niche_name,
+                deal_type=deal_type_name,
+                follower_count=followers_value or 0,
+                avg_views=avg_views_value or 0,
+                engagement_rate=engagement_value or 0.0,
+                geo=geo_name,
+                base_cpm=float(result["base_cpm"]),
+                niche_multiplier=float(result["niche_multiplier"]),
+                engagement_multiplier=float(result["engagement_multiplier"]),
+                geo_multiplier=float(result["geo_multiplier"]),
+                effective_cpm=float(result["effective_cpm"]),
+                recommended_price=recommended_price,
+                low_price=recommended_low,
+                high_price=recommended_high,
+            )
+        except Exception:
+            logger.exception("OpenAI calculator explanation failed")
+            explanation = None
+
+    if not explanation:
+        explanation = (
+            "Your recommended rate is "
+            f"<strong>${recommended_price:,.0f}</strong> "
+            f"(typical range ${recommended_low:,.0f}–${recommended_high:,.0f}) "
+            f"based on a base CPM of ${result['base_cpm']:.2f} for {platform_name}, "
+            f"adjusted for your {niche_name} niche, your engagement rate of {engagement_text}, "
+            f"and your primarily {geo_name} audience for this {deal_type_name} deal."
+        )
+    else:
+        safe = html.escape(explanation)
+        explanation = (
+            safe.replace("&lt;strong&gt;", "<strong>")
+            .replace("&lt;/strong&gt;", "</strong>")
+            .strip()
+        )
 
     calculation = Calculation(
         user_id=user.id,
@@ -1198,11 +1312,13 @@ def calculator_submit(
         followers=followers_value,
         avg_views=avg_views_value,
         engagement_rate=engagement_value,
+        recommended_price=recommended_price,
         recommended_min=result["recommended_min"],
         recommended_max=result["recommended_max"],
         cpmm_base=result["base_cpm"],
         engagement_multiplier=result["engagement_multiplier"],
         geo_multiplier=result["geo_multiplier"],
+        ai_explanation=explanation,
     )
     session.add(calculation)
     session.commit()
@@ -1213,6 +1329,7 @@ def calculator_submit(
             "request": request,
             "user": user,
             "is_pro_or_premium": is_pro_or_premium,
+            "is_free_plan": is_free_plan,
             "result": result,
             "limit_reached": False,
             "message": None,
@@ -1226,6 +1343,7 @@ def calculator_submit(
             "engagement_rate": engagement_value,
             "geo_region": geo_region_code,
             "community_note": community_note,
+            "ai_explanation": explanation,
         },
     )
 

@@ -29,18 +29,32 @@
       <span class="tag">For micro-creators</span>
       <h1 class="hero-title">Stop Underpricing Your Brand Deals</h1>
       <p class="hero-subtitle">Wortha gives micro-creators data-backed pricing, clear benchmarks, and negotiation tools so you can quote with confidence.</p>
+      <div class="icon-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 3v18h18" />
+          <path d="M7 14l4-4 3 3 5-6" />
+        </svg>
+        <span>Benchmarked ranges built from real creator data.</span>
+      </div>
+      <div class="icon-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 3" />
+        </svg>
+        <span>Fast, repeatable pricing workflow in minutes.</span>
+      </div>
       <div class="hero-actions">
         <a class="btn btn-primary" href="/signup">Get started</a>
         <a class="btn btn-secondary" href="#pricing">View pricing</a>
       </div>
     </div>
-    <div class="card" aria-hidden="true">
+    <div class="card card-highlight hero-panel" aria-hidden="true">
       <div class="card-header">
         <div>
           <h3>Recommended rate</h3>
           <p class="muted">Based on your metrics</p>
         </div>
-        <span class="badge">Live preview</span>
+        <span class="badge badge-primary">Live preview</span>
       </div>
       <div class="metric">$850–$1,200</div>
       <p class="muted">Suggested range for a TikTok Reel sponsorship</p>
@@ -77,15 +91,48 @@
     <h2>Creators are leaving money on the table — every deal.</h2>
     <div class="grid grid-3">
       <div class="card">
-        <h4>🤔 Guessing your rates</h4>
+        <div class="tile-header">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2a7 7 0 0 0-4 12.7V18a2 2 0 0 0 4 0v-1" />
+              <path d="M12 14.7A7 7 0 0 0 12 2" />
+            </svg>
+          </div>
+          <div>
+            <h4>Guessing your rates</h4>
+            <p class="tile-subtitle">Rates swing by niche, platform, and engagement.</p>
+          </div>
+        </div>
         <p>Rates swing by niche, platform, and engagement. Without benchmarks, most creators price too low.</p>
       </div>
       <div class="card">
-        <h4>💸 Brands lowballing you</h4>
+        <div class="tile-header">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 1v22" />
+              <path d="M17 5H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H6" />
+            </svg>
+          </div>
+          <div>
+            <h4>Brands lowballing you</h4>
+            <p class="tile-subtitle">Counter with evidence, not vibes.</p>
+          </div>
+        </div>
         <p>It’s hard to counter without data. Wortha gives you the numbers to negotiate confidently.</p>
       </div>
       <div class="card">
-        <h4>📉 No idea what others charge</h4>
+        <div class="tile-header">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 17l6-6 4 4 7-7" />
+              <path d="M14 8h7v7" />
+            </svg>
+          </div>
+          <div>
+            <h4>No idea what others charge</h4>
+            <p class="tile-subtitle">See what comparable creators command.</p>
+          </div>
+        </div>
         <p>We aggregate anonymous deal data so you can price based on real creator outcomes.</p>
       </div>
     </div>
@@ -117,8 +164,8 @@
   <div class="container">
     <h2>Pricing</h2>
     <p class="muted">Choose the plan that fits your workflow.</p>
-    <div class="grid grid-3">
-      <div class="card">
+    <div class="pricing-grid">
+      <div class="card pricing-card">
         <span class="badge">Starter</span>
         <h3>Starter</h3>
         <p class="metric">$9 / month</p>
@@ -136,8 +183,8 @@
           <a class="btn btn-secondary" href="/signup">Get started</a>
         {% endif %}
       </div>
-      <div class="card card-highlight">
-        <span class="badge">Popular</span>
+      <div class="card card-highlight pricing-card recommended">
+        <span class="badge badge-primary">Popular</span>
         <h3>Pro</h3>
         <p class="metric">$19 / month</p>
         <ul>
@@ -155,7 +202,7 @@
           <a class="btn btn-primary" href="/signup">Get started</a>
         {% endif %}
       </div>
-      <div class="card">
+      <div class="card pricing-card">
         <span class="badge">Premium</span>
         <h3>Premium</h3>
         <p class="metric">$29 / month</p>

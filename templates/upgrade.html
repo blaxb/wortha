@@ -1,25 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="card">
+<section class="page-header page-hero">
   <h2>Choose your plan</h2>
   <p>Unlock more tools to price, pitch, and negotiate with confidence.</p>
-  <p>Your current plan: <strong>{{ user.plan|capitalize }}</strong></p>
+  <p class="muted">Your current plan: <strong>{{ user.plan|capitalize }}</strong></p>
 </section>
 
-<section class="card">
-  <div class="grid grid-3">
-    <div class="card card-muted">
-      <h3>Free</h3>
+<section class="card card-muted">
+  <div class="card-header">
+    <div>
+      <h3>Free plan</h3>
       <p class="muted">Current features</p>
-      <ul>
-        <li>3 calculations per month</li>
-        <li>Basic CPM breakdown</li>
-      </ul>
     </div>
-    <div class="card">
+    <span class="badge">Active</span>
+  </div>
+  <ul>
+    <li>3 calculations per month</li>
+    <li>Basic CPM breakdown</li>
+  </ul>
+</section>
+
+<section>
+  <div class="pricing-grid">
+    <div class="card pricing-card">
+      <span class="badge">Starter</span>
       <h3>Starter</h3>
-      <p class="muted">$9/month</p>
+      <p class="metric">$9/month</p>
       <ul>
         <li>Unlimited calculations</li>
         <li>Basic media kit generator</li>
@@ -30,9 +37,10 @@
         <button class="btn btn-secondary" type="submit">Upgrade to Starter</button>
       </form>
     </div>
-    <div class="card">
+    <div class="card card-highlight pricing-card recommended">
+      <span class="badge badge-primary">Best value</span>
       <h3>Pro</h3>
-      <p class="muted">$19/month</p>
+      <p class="metric">$19/month</p>
       <ul>
         <li>Everything in Starter</li>
         <li>Saved calculation history</li>
@@ -40,12 +48,13 @@
       </ul>
       <form action="/billing/checkout" method="post">
         <input type="hidden" name="plan" value="pro" />
-        <button class="btn btn-secondary" type="submit">Upgrade to Pro</button>
+        <button class="btn btn-primary" type="submit">Upgrade to Pro</button>
       </form>
     </div>
-    <div class="card">
+    <div class="card pricing-card">
+      <span class="badge">Premium</span>
       <h3>Premium</h3>
-      <p class="muted">$29/month</p>
+      <p class="metric">$29/month</p>
       <ul>
         <li>Everything in Pro</li>
         <li>AI negotiation assistant (coming soon)</li>
