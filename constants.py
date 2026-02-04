@@ -3,6 +3,29 @@ from __future__ import annotations
 import re
 from typing import Iterable
 
+PLANS = {
+    "free": {
+        "name": "Free",
+        "price_display": "$0 / month",
+        "description": "Basic pricing calculator with limited usage.",
+    },
+    "starter": {
+        "name": "Starter",
+        "price_display": "$9 / month",
+        "description": "Unlimited calculations, basic media kit tools, and email support.",
+    },
+    "pro": {
+        "name": "Pro",
+        "price_display": "$19 / month",
+        "description": "Everything in Starter plus saved history and advanced benchmarks.",
+    },
+    "premium": {
+        "name": "Premium",
+        "price_display": "$29 / month",
+        "description": "Full access to negotiation, rate index, and premium insights.",
+    },
+}
+
 PLATFORMS = [
     ("youtube", "YouTube"),
     ("instagram", "Instagram"),

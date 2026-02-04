@@ -2,8 +2,8 @@
 
 {% block content %}
 <section class="card">
-  <h2>Upgrade to Pro or Premium</h2>
-  <p>Unlock unlimited calculations, media kits, and AI negotiation coaching (coming soon).</p>
+  <h2>Choose your plan</h2>
+  <p>Unlock more tools to price, pitch, and negotiate with confidence.</p>
   <p>Your current plan: <strong>{{ user.plan|capitalize }}</strong></p>
 </section>
 
@@ -18,38 +18,44 @@
       </ul>
     </div>
     <div class="card">
+      <h3>Starter</h3>
+      <p class="muted">$9/month</p>
+      <ul>
+        <li>Unlimited calculations</li>
+        <li>Basic media kit generator</li>
+        <li>Email support</li>
+      </ul>
+      <form action="/billing/checkout" method="post">
+        <input type="hidden" name="plan" value="starter" />
+        <button class="btn btn-secondary" type="submit">Upgrade to Starter</button>
+      </form>
+    </div>
+    <div class="card">
       <h3>Pro</h3>
       <p class="muted">$19/month</p>
       <ul>
-        <li>Unlimited calculations</li>
+        <li>Everything in Starter</li>
         <li>Saved calculation history</li>
-        <li>Media kit generator (coming soon)</li>
         <li>Detailed benchmark breakdown (coming soon)</li>
       </ul>
-      <div class="notice">
-        <p><strong>DEV ONLY</strong> Temporary plan switch</p>
-        <form action="/dev/set-plan" method="post">
-          <input type="hidden" name="plan" value="pro" />
-          <button class="btn btn-secondary" type="submit">Set my plan to Pro (DEV ONLY)</button>
-        </form>
-      </div>
+      <form action="/billing/checkout" method="post">
+        <input type="hidden" name="plan" value="pro" />
+        <button class="btn btn-secondary" type="submit">Upgrade to Pro</button>
+      </form>
     </div>
     <div class="card">
       <h3>Premium</h3>
-      <p class="muted">$49/month</p>
+      <p class="muted">$29/month</p>
       <ul>
         <li>Everything in Pro</li>
         <li>AI negotiation assistant (coming soon)</li>
         <li>Community rate index (coming soon)</li>
         <li>Advanced analytics dashboard (coming soon)</li>
       </ul>
-      <div class="notice">
-        <p><strong>DEV ONLY</strong> Temporary plan switch</p>
-        <form action="/dev/set-plan" method="post">
-          <input type="hidden" name="plan" value="premium" />
-          <button class="btn btn-secondary" type="submit">Set my plan to Premium (DEV ONLY)</button>
-        </form>
-      </div>
+      <form action="/billing/checkout" method="post">
+        <input type="hidden" name="plan" value="premium" />
+        <button class="btn btn-secondary" type="submit">Upgrade to Premium</button>
+      </form>
     </div>
   </div>
 </section>

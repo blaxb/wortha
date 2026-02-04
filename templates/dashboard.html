@@ -58,4 +58,34 @@
     <a class="btn btn-secondary" href="/insights">Open</a>
   </section>
 </div>
+
+<section class="card">
+  <h3>Billing</h3>
+  <p>Current plan: <strong>{{ user.plan|capitalize }}</strong></p>
+  {% if user.plan and user.plan|lower in ["starter", "pro", "premium"] %}
+    <a class="btn btn-secondary" href="/billing/portal">Manage billing</a>
+  {% else %}
+    <p class="muted">Upgrade any time to unlock more tools.</p>
+    <div class="grid grid-3">
+      <form action="/billing/checkout" method="post" class="card card-muted">
+        <h4>Starter</h4>
+        <p class="muted">$9 / month</p>
+        <input type="hidden" name="plan" value="starter" />
+        <button class="btn btn-secondary" type="submit">Upgrade to Starter</button>
+      </form>
+      <form action="/billing/checkout" method="post" class="card card-muted">
+        <h4>Pro</h4>
+        <p class="muted">$19 / month</p>
+        <input type="hidden" name="plan" value="pro" />
+        <button class="btn btn-secondary" type="submit">Upgrade to Pro</button>
+      </form>
+      <form action="/billing/checkout" method="post" class="card card-muted">
+        <h4>Premium</h4>
+        <p class="muted">$29 / month</p>
+        <input type="hidden" name="plan" value="premium" />
+        <button class="btn btn-secondary" type="submit">Upgrade to Premium</button>
+      </form>
+    </div>
+  {% endif %}
+</section>
 {% endblock %}

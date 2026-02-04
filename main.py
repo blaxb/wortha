@@ -7,13 +7,14 @@ from typing import Optional
 
 import os
 
-from fastapi import Depends, FastAPI, Form, Request
+from fastapi import Depends, FastAPI, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from starlette.middleware.sessions import SessionMiddleware
+import stripe
 
 from auth import (
     authenticate_user,
@@ -118,6 +119,45 @@ templates.env.globals.update(
         "content_format_label": content_format_label,
     }
 )
+
+# Stripe configuration (expected environment variables):
+# STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_PRICE_STARTER,
+# STRIPE_PRICE_PRO, STRIPE_PRICE_PREMIUM, STRIPE_WEBHOOK_SECRET, APP_BASE_URL
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+stripe.api_key = STRIPE_SECRET_KEY
+
+
+def get_app_base_url(request: Request) -> str:
+    base_url = os.environ.get("APP_BASE_URL")
+    if base_url:
+        return base_url.rstrip("/")
+    return str(request.base_url).rstrip("/")
+
+
+def get_price_ids() -> dict[str, str]:
+    try:
+        return {
+            "starter": os.environ["STRIPE_PRICE_STARTER"],
+            "pro": os.environ["STRIPE_PRICE_PRO"],
+            "premium": os.environ["STRIPE_PRICE_PREMIUM"],
+        }
+    except KeyError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Stripe price IDs are not configured.",
+        ) from exc
+
+
+def resolve_plan_from_price_id(
+    price_id: str | None, price_ids: dict[str, str]
+) -> str | None:
+    if not price_id:
+        return None
+    for plan, plan_price_id in price_ids.items():
+        if price_id == plan_price_id:
+            return plan
+    return None
 
 
 def calculate_rate(
@@ -397,6 +437,210 @@ def upgrade(
             "reason": request.query_params.get("reason"),
         },
     )
+
+
+@app.post("/billing/checkout")
+def billing_checkout(
+    request: Request,
+    plan: str = Form(...),
+    session: Session = Depends(get_session),
+    user: User = Depends(get_current_user),
+):
+    if not stripe.api_key:
+        raise HTTPException(status_code=500, detail="Stripe is not configured.")
+
+    normalized_plan = plan.strip().lower()
+    price_ids = get_price_ids()
+    if normalized_plan not in price_ids:
+        raise HTTPException(status_code=400, detail="Invalid plan selection.")
+
+    if not user.stripe_customer_id:
+        customer = stripe.Customer.create(
+            email=user.email,
+            metadata={"user_id": str(user.id)},
+        )
+        user.stripe_customer_id = customer["id"]
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+    base_url = get_app_base_url(request)
+    checkout_session = stripe.checkout.Session.create(
+        mode="subscription",
+        customer=user.stripe_customer_id,
+        line_items=[{"price": price_ids[normalized_plan], "quantity": 1}],
+        success_url=f"{base_url}/billing/success?session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=f"{base_url}/billing/cancel",
+        metadata={"user_id": str(user.id), "plan": normalized_plan},
+    )
+    return RedirectResponse(checkout_session.url, status_code=303)
+
+
+@app.get("/billing/success", response_class=HTMLResponse)
+def billing_success(
+    request: Request,
+    user: User = Depends(get_current_user),
+):
+    return templates.TemplateResponse(
+        "billing_success.html",
+        {"request": request, "user": user},
+    )
+
+
+@app.get("/billing/cancel", response_class=HTMLResponse)
+def billing_cancel(
+    request: Request,
+    user: User = Depends(get_current_user),
+):
+    return templates.TemplateResponse(
+        "billing_cancel.html",
+        {"request": request, "user": user},
+    )
+
+
+@app.get("/billing/portal")
+def billing_portal(
+    request: Request,
+    user: User = Depends(get_current_user),
+):
+    if not stripe.api_key:
+        raise HTTPException(status_code=500, detail="Stripe is not configured.")
+
+    if not user.stripe_customer_id:
+        return RedirectResponse(url="/upgrade", status_code=303)
+
+    base_url = get_app_base_url(request)
+    portal_session = stripe.billing_portal.Session.create(
+        customer=user.stripe_customer_id,
+        return_url=f"{base_url}/dashboard",
+    )
+    return RedirectResponse(portal_session.url, status_code=303)
+
+
+@app.post("/webhooks/stripe")
+async def stripe_webhook(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+    webhook_secret = os.environ.get("STRIPE_WEBHOOK_SECRET")
+    if not webhook_secret:
+        raise HTTPException(status_code=500, detail="Stripe webhook secret is missing.")
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except (ValueError, stripe.error.SignatureVerificationError):
+        return Response(status_code=400)
+
+    price_ids = get_price_ids()
+    event_type = event.get("type")
+
+    if event_type == "checkout.session.completed":
+        session_obj = event["data"]["object"]
+        metadata = session_obj.get("metadata") or {}
+        customer_id = session_obj.get("customer")
+        subscription_id = session_obj.get("subscription")
+        user = None
+
+        user_id = metadata.get("user_id")
+        if user_id:
+            try:
+                user = session.get(User, int(user_id))
+            except ValueError:
+                user = None
+
+        if not user and customer_id:
+            user = session.exec(
+                select(User).where(User.stripe_customer_id == customer_id)
+            ).first()
+
+        if not user and customer_id:
+            customer = stripe.Customer.retrieve(customer_id)
+            customer_metadata = customer.get("metadata") or {}
+            customer_user_id = customer_metadata.get("user_id")
+            if customer_user_id:
+                try:
+                    user = session.get(User, int(customer_user_id))
+                except ValueError:
+                    user = None
+
+        plan = metadata.get("plan")
+        if not plan:
+            try:
+                line_items = stripe.checkout.Session.list_line_items(
+                    session_obj["id"], limit=1
+                )
+                if line_items.get("data"):
+                    price_id = line_items["data"][0]["price"]["id"]
+                    plan = resolve_plan_from_price_id(price_id, price_ids)
+            except Exception:
+                plan = None
+
+        if user:
+            if plan:
+                user.plan = plan
+            if customer_id:
+                user.stripe_customer_id = customer_id
+            if subscription_id:
+                user.stripe_subscription_id = subscription_id
+            session.add(user)
+            session.commit()
+
+    elif event_type == "customer.subscription.updated":
+        subscription = event["data"]["object"]
+        customer_id = subscription.get("customer")
+        subscription_id = subscription.get("id")
+        items = subscription.get("items", {}).get("data", [])
+        price_id = None
+        if items:
+            price_id = items[0].get("price", {}).get("id")
+        plan = resolve_plan_from_price_id(price_id, price_ids)
+
+        user = None
+        if subscription_id:
+            user = session.exec(
+                select(User).where(User.stripe_subscription_id == subscription_id)
+            ).first()
+        if not user and customer_id:
+            user = session.exec(
+                select(User).where(User.stripe_customer_id == customer_id)
+            ).first()
+
+        if user:
+            if plan:
+                user.plan = plan
+            if customer_id:
+                user.stripe_customer_id = customer_id
+            if subscription_id:
+                user.stripe_subscription_id = subscription_id
+            session.add(user)
+            session.commit()
+
+    elif event_type == "customer.subscription.deleted":
+        subscription = event["data"]["object"]
+        customer_id = subscription.get("customer")
+        subscription_id = subscription.get("id")
+
+        user = None
+        if subscription_id:
+            user = session.exec(
+                select(User).where(User.stripe_subscription_id == subscription_id)
+            ).first()
+        if not user and customer_id:
+            user = session.exec(
+                select(User).where(User.stripe_customer_id == customer_id)
+            ).first()
+
+        if user:
+            user.plan = "free"
+            user.stripe_subscription_id = None
+            if customer_id:
+                user.stripe_customer_id = customer_id
+            session.add(user)
+            session.commit()
+
+    return Response(status_code=200)
 
 
 @app.get("/media-kit", response_class=HTMLResponse)
@@ -1003,7 +1247,7 @@ def dev_set_plan(
     user: User = Depends(get_current_user),
 ):
     normalized_plan = plan.strip().lower()
-    if normalized_plan not in {"free", "pro", "premium"}:
+    if normalized_plan not in {"free", "starter", "pro", "premium"}:
         return RedirectResponse(url="/dashboard", status_code=303)
     user.plan = normalized_plan
     session.add(user)

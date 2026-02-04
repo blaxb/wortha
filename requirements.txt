@@ -8,3 +8,4 @@ uvicorn==0.30.6
 itsdangerous==2.2.0
 xhtml2pdf==0.2.16
 openai==1.63.2
+stripe==14.3.0

@@ -6,9 +6,20 @@
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
   </div>
-  <div class="nav-actions">
-    <a class="btn btn-secondary" href="/login">Log in</a>
-  </div>
+  {% if user %}
+    <div class="nav-actions">
+      <a class="btn btn-ghost" href="/dashboard">Dashboard</a>
+      <a class="btn btn-ghost" href="/billing/portal">Manage billing</a>
+      <form action="/logout" method="post" class="logout-form">
+        <button class="btn btn-ghost" type="submit">Log out</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="nav-actions">
+      <a class="btn btn-secondary" href="/login">Log in</a>
+      <a class="btn btn-primary" href="/signup">Get started</a>
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -19,8 +30,8 @@
       <h1 class="hero-title">Stop Underpricing Your Brand Deals</h1>
       <p class="hero-subtitle">Wortha gives micro-creators data-backed pricing, clear benchmarks, and negotiation tools so you can quote with confidence.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
-        <a class="btn btn-secondary" href="#how-it-works">See how it works</a>
+        <a class="btn btn-primary" href="/signup">Get started</a>
+        <a class="btn btn-secondary" href="#pricing">View pricing</a>
       </div>
     </div>
     <div class="card" aria-hidden="true">
@@ -104,80 +115,65 @@
 
 <section id="pricing">
   <div class="container">
-    <h2>Founding Creator Pricing</h2>
-    <p class="muted">Standard pricing is $19 / $49 per month. Founding creators lock in lower pricing forever.</p>
+    <h2>Pricing</h2>
+    <p class="muted">Choose the plan that fits your workflow.</p>
     <div class="grid grid-3">
       <div class="card">
         <span class="badge">Starter</span>
-        <h3>Founding Starter</h3>
+        <h3>Starter</h3>
         <p class="metric">$9 / month</p>
         <ul>
           <li>Unlimited pricing calculations</li>
           <li>Basic media kit generator</li>
           <li>Email support</li>
         </ul>
-        <a class="btn btn-secondary" href="#waitlist">Join waitlist</a>
+        {% if user %}
+          <form action="/billing/checkout" method="post">
+            <input type="hidden" name="plan" value="starter" />
+            <button class="btn btn-secondary" type="submit">Upgrade to Starter</button>
+          </form>
+        {% else %}
+          <a class="btn btn-secondary" href="/signup">Get started</a>
+        {% endif %}
       </div>
       <div class="card card-highlight">
-        <span class="badge">Founding Creator</span>
-        <h3>Founding Pro</h3>
-        <p class="metric">$25 / month</p>
+        <span class="badge">Popular</span>
+        <h3>Pro</h3>
+        <p class="metric">$19 / month</p>
         <ul>
           <li>Everything in Starter</li>
           <li>Benchmarks dashboard (coming soon)</li>
           <li>Smart counter-offer suggestions</li>
           <li>Priority access to new features</li>
         </ul>
-        <a class="btn btn-primary" href="#waitlist">Join waitlist</a>
+        {% if user %}
+          <form action="/billing/checkout" method="post">
+            <input type="hidden" name="plan" value="pro" />
+            <button class="btn btn-primary" type="submit">Upgrade to Pro</button>
+          </form>
+        {% else %}
+          <a class="btn btn-primary" href="/signup">Get started</a>
+        {% endif %}
       </div>
       <div class="card">
         <span class="badge">Premium</span>
-        <h3>Founding Premium</h3>
-        <p class="metric">$49 / month</p>
+        <h3>Premium</h3>
+        <p class="metric">$29 / month</p>
         <ul>
           <li>Full rate index access</li>
           <li>Negotiation assistant</li>
           <li>Quarterly niche reports</li>
           <li>Dedicated support</li>
         </ul>
-        <a class="btn btn-secondary" href="#waitlist">Join waitlist</a>
+        {% if user %}
+          <form action="/billing/checkout" method="post">
+            <input type="hidden" name="plan" value="premium" />
+            <button class="btn btn-secondary" type="submit">Upgrade to Premium</button>
+          </form>
+        {% else %}
+          <a class="btn btn-secondary" href="/signup">Get started</a>
+        {% endif %}
       </div>
-    </div>
-    <p class="form-note">Founding pricing is limited. Once we launch publicly, new users will pay standard rates.</p>
-  </div>
-</section>
-
-<section id="waitlist">
-  <div class="container">
-    <h2>Join the Wortha Waitlist</h2>
-    <p class="muted">Be one of the first creators to get access — and lock in founding pricing.</p>
-    <div class="card card-highlight">
-      <form action="#" method="post" class="form">
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input id="name" name="name" type="text" placeholder="Your name" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="you@example.com" required />
-        </div>
-        <div class="form-group">
-          <label for="platform">Primary platform</label>
-          <select id="platform" name="platform">
-            <option value="">Select one</option>
-            <option>TikTok</option>
-            <option>YouTube</option>
-            <option>Instagram</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="followers">Follower count</label>
-          <input id="followers" name="followers" type="text" placeholder="e.g., 24,500" />
-        </div>
-        <button class="btn btn-primary" type="submit">Join as a Founding Creator</button>
-      </form>
-      <p class="form-note">No spam. We’ll only email you about Wortha and early access.</p>
     </div>
   </div>
 </section>
@@ -199,8 +195,8 @@
         <p>We support TikTok, YouTube, Instagram, and other social platforms.</p>
       </div>
       <div class="card card-muted">
-        <h4>When will Wortha launch?</h4>
-        <p>We’re inviting a small group of founding creators first, then opening publicly.</p>
+        <h4>Can I change plans later?</h4>
+        <p>Yes. You can upgrade, downgrade, or cancel anytime from your billing portal.</p>
       </div>
       <div class="card card-muted">
         <h4>Will my pricing data be shared?</h4>
