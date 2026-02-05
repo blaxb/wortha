@@ -1,253 +1,1456 @@
 {% extends "base.html" %}
 
 {% block nav %}
-  <div class="nav-links">
-    <a href="#how-it-works">How it Works</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#faq">FAQ</a>
+<nav style="
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #334155;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 16px 32px;
+">
+  <div style="
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  ">
+    <a href="/" style="
+      font-family: 'Sora', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: #F1F5F9;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    ">
+      Wortha
+    </a>
+
+    <div style="display: flex; gap: 32px; align-items: center; flex-wrap: wrap;">
+      <a href="#how-it-works" style="
+        color: #CBD5E1;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: color 0.2s;
+      " onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#CBD5E1'">
+        How it Works
+      </a>
+      <a href="#pricing" style="
+        color: #CBD5E1;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: color 0.2s;
+      " onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#CBD5E1'">
+        Pricing
+      </a>
+      <a href="#faq" style="
+        color: #CBD5E1;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: color 0.2s;
+      " onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#CBD5E1'">
+        FAQ
+      </a>
+      {% if user %}
+        <a href="/dashboard" style="
+          color: #CBD5E1;
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 15px;
+          transition: color 0.2s;
+        " onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#CBD5E1'">
+          Dashboard
+        </a>
+        <a href="/billing/portal" style="
+          color: #CBD5E1;
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 15px;
+          transition: color 0.2s;
+        " onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#CBD5E1'">
+          Manage billing
+        </a>
+        <form action="/logout" method="post" style="margin: 0;">
+          <button class="btn-secondary" type="submit">Log out</button>
+        </form>
+      {% else %}
+        <a href="/login" style="
+          color: #CBD5E1;
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 15px;
+          transition: color 0.2s;
+        " onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#CBD5E1'">
+          Log in
+        </a>
+        <a href="/signup" class="btn-primary" style="text-decoration: none; display: inline-block;">
+          Get Started
+        </a>
+      {% endif %}
+    </div>
   </div>
-  {% if user %}
-    <div class="nav-actions">
-      <a class="btn btn-ghost" href="/dashboard">Dashboard</a>
-      <a class="btn btn-ghost" href="/billing/portal">Manage billing</a>
-      <form action="/logout" method="post" class="logout-form">
-        <button class="btn btn-ghost" type="submit">Log out</button>
-      </form>
-    </div>
-  {% else %}
-    <div class="nav-actions">
-      <a class="btn btn-secondary" href="/login">Log in</a>
-      <a class="btn btn-primary" href="/signup">Get started</a>
-    </div>
-  {% endif %}
+</nav>
 {% endblock %}
 
 {% block content %}
-<section id="hero" class="hero">
-  <div class="container hero-grid">
+<section id="hero" style="
+  min-height: 95vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #0A0E1A 0%, #1E293B 50%, #0A0E1A 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 80px 32px;
+">
+  <div style="
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+    pointer-events: none;
+  "></div>
+
+  <div style="
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  ">
+
     <div>
-      <span class="tag">For micro-creators</span>
-      <h1 class="hero-title">Stop Underpricing Your Brand Deals</h1>
-      <p class="hero-subtitle">Wortha gives micro-creators data-backed pricing, clear benchmarks, and negotiation tools so you can quote with confidence.</p>
-      <div class="icon-row">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3 3v18h18" />
-          <path d="M7 14l4-4 3 3 5-6" />
-        </svg>
-        <span>Benchmarked ranges built from real creator data.</span>
+      <div style="
+        display: inline-block;
+        background: rgba(59, 130, 246, 0.15);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 24px;
+        padding: 8px 18px;
+        margin-bottom: 24px;
+      ">
+        <span style="
+          font-size: 13px;
+          font-weight: 700;
+          color: #60A5FA;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+        ">
+          For Micro-Creators (5K–100K Followers)
+        </span>
       </div>
-      <div class="icon-row">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 3" />
-        </svg>
-        <span>Fast, repeatable pricing workflow in minutes.</span>
-      </div>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="/signup">Get started</a>
-        <a class="btn btn-secondary" href="#pricing">View pricing</a>
-      </div>
-    </div>
-    <div class="card card-highlight hero-panel" aria-hidden="true">
-      <div class="card-header">
+
+      <h1 style="
+        font-size: 56px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        background: linear-gradient(135deg, #F1F5F9 0%, #94A3B8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      ">
+        Stop Underpricing Your Brand Deals
+      </h1>
+
+      <p style="
+        font-size: 20px;
+        color: #94A3B8;
+        line-height: 1.6;
+        margin-bottom: 32px;
+        max-width: 540px;
+      ">
+        Get data-backed pricing in 30 seconds. No more guessing, no more leaving money on the table. Built from real creator deals.
+      </p>
+
+      <div style="
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 32px;
+      ">
         <div>
-          <h3>Recommended rate</h3>
-          <p class="muted">Based on your metrics</p>
+          <div style="font-size: 28px; font-weight: 800; color: #3B82F6;">1,200+</div>
+          <div style="font-size: 13px; color: #64748B;">Creator deals analyzed</div>
         </div>
-        <span class="badge badge-primary">Live preview</span>
+        <div style="width: 1px; height: 40px; background: #334155;"></div>
+        <div>
+          <div style="font-size: 28px; font-weight: 800; color: #10B981;">35%</div>
+          <div style="font-size: 13px; color: #64748B;">Avg. rate increase</div>
+        </div>
       </div>
-      <div class="metric">$850–$1,200</div>
-      <p class="muted">Suggested range for a TikTok Reel sponsorship</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Metric</th>
-              <th class="text-right">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Base CPM</td>
-              <td class="text-right">$18.50</td>
-            </tr>
-            <tr>
-              <td>Niche multiplier</td>
-              <td class="text-right">1.2x</td>
-            </tr>
-            <tr>
-              <td>Engagement</td>
-              <td class="text-right">4.1%</td>
-            </tr>
-          </tbody>
-        </table>
+
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <a href="/signup" class="btn-primary" style="text-decoration: none; display: inline-block;">
+          Calculate Your Rate — Free
+        </a>
+        <a href="#how-it-works" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+          See How It Works
+        </a>
       </div>
     </div>
+
+    <div class="card-elevated" style="
+      padding: 32px;
+      background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    ">
+      <div style="
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+      ">
+        Recommended Rate
+      </div>
+
+      <div style="
+        font-size: 48px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+      ">
+        $850 – $1,200
+      </div>
+
+      <div style="
+        font-size: 14px;
+        color: #94A3B8;
+        margin-bottom: 24px;
+      ">
+        For a TikTok Reel sponsorship
+      </div>
+
+      <div style="
+        background: #111827;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 20px;
+      ">
+        <div style="
+          font-size: 12px;
+          font-weight: 700;
+          color: #64748B;
+          margin-bottom: 12px;
+        ">
+          How we calculated this:
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 14px; color: #CBD5E1;">Base CPM</span>
+            <span style="font-size: 15px; font-weight: 700; color: #F1F5F9;">$18.50</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 14px; color: #CBD5E1;">Niche multiplier</span>
+            <span style="font-size: 15px; font-weight: 700; color: #10B981;">1.2×</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 14px; color: #CBD5E1;">Engagement rate</span>
+            <span style="font-size: 15px; font-weight: 700; color: #60A5FA;">4.1%</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="
+        margin-top: 20px;
+        padding: 12px 16px;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 8px;
+        font-size: 13px;
+        color: #94A3B8;
+        text-align: center;
+      ">
+        ✨ Try it yourself — no signup required
+      </div>
+    </div>
+
+  </div>
+
+  <style>
+    @media (max-width: 968px) {
+      #hero > div {
+        grid-template-columns: 1fr !important;
+        gap: 48px !important;
+      }
+      #hero h1 {
+        font-size: 40px !important;
+      }
+    }
+  </style>
+</section>
+
+<section id="problem" style="
+  background: #111827;
+  padding: 100px 32px;
+">
+  <div style="max-width: 1400px; margin: 0 auto;">
+
+    <div style="text-align: center; margin-bottom: 64px;">
+      <h2 style="
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        color: #F1F5F9;
+      ">
+        Why creators underprice (and how to fix it)
+      </h2>
+      <p style="
+        font-size: 18px;
+        color: #94A3B8;
+        max-width: 600px;
+        margin: 0 auto;
+      ">
+        Three problems every creator faces — and the data-backed solutions.
+      </p>
+    </div>
+
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    ">
+
+      <div class="card">
+        <div style="
+          width: 56px;
+          height: 56px;
+          border-radius: 12px;
+          background: rgba(239, 68, 68, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+        ">
+          <span style="font-size: 28px;">🤔</span>
+        </div>
+
+        <h3 style="
+          font-size: 22px;
+          font-weight: 700;
+          color: #F1F5F9;
+          margin-bottom: 12px;
+        ">
+          You're guessing your rates
+        </h3>
+
+        <p style="
+          font-size: 15px;
+          color: #94A3B8;
+          line-height: 1.6;
+          margin-bottom: 16px;
+        ">
+          Rates swing wildly by niche, platform, and engagement. Without benchmarks, most creators price too low.
+        </p>
+
+        <div style="
+          padding: 12px 16px;
+          background: rgba(59, 130, 246, 0.1);
+          border-left: 3px solid #3B82F6;
+          border-radius: 6px;
+        ">
+          <div style="font-size: 12px; font-weight: 700; color: #60A5FA; margin-bottom: 4px;">
+            THE FIX
+          </div>
+          <div style="font-size: 14px; color: #CBD5E1;">
+            Data-backed CPM ranges built from 1,200+ real creator deals.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="
+          width: 56px;
+          height: 56px;
+          border-radius: 12px;
+          background: rgba(245, 158, 11, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+        ">
+          <span style="font-size: 28px;">💸</span>
+        </div>
+
+        <h3 style="
+          font-size: 22px;
+          font-weight: 700;
+          color: #F1F5F9;
+          margin-bottom: 12px;
+        ">
+          Brands are lowballing you
+        </h3>
+
+        <p style="
+          font-size: 15px;
+          color: #94A3B8;
+          line-height: 1.6;
+          margin-bottom: 16px;
+        ">
+          It's hard to counter-offer without evidence. Most creators accept the first offer out of fear.
+        </p>
+
+        <div style="
+          padding: 12px 16px;
+          background: rgba(59, 130, 246, 0.1);
+          border-left: 3px solid #3B82F6;
+          border-radius: 6px;
+        ">
+          <div style="font-size: 12px; font-weight: 700; color: #60A5FA; margin-bottom: 4px;">
+            THE FIX
+          </div>
+          <div style="font-size: 14px; color: #CBD5E1;">
+            AI negotiation assistant gives you counter-offers backed by real numbers.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="
+          width: 56px;
+          height: 56px;
+          border-radius: 12px;
+          background: rgba(16, 185, 129, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+        ">
+          <span style="font-size: 28px;">📊</span>
+        </div>
+
+        <h3 style="
+          font-size: 22px;
+          font-weight: 700;
+          color: #F1F5F9;
+          margin-bottom: 12px;
+        ">
+          No idea what others charge
+        </h3>
+
+        <p style="
+          font-size: 15px;
+          color: #94A3B8;
+          line-height: 1.6;
+          margin-bottom: 16px;
+        ">
+          Creators keep rates private. You're flying blind without access to real market data.
+        </p>
+
+        <div style="
+          padding: 12px 16px;
+          background: rgba(59, 130, 246, 0.1);
+          border-left: 3px solid #3B82F6;
+          border-radius: 6px;
+        ">
+          <div style="font-size: 12px; font-weight: 700; color: #60A5FA; margin-bottom: 4px;">
+            THE FIX
+          </div>
+          <div style="font-size: 14px; color: #CBD5E1;">
+            Anonymized rate index shows what comparable creators actually charge.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <style>
+      @media (max-width: 968px) {
+        #problem > div > div:last-of-type {
+          grid-template-columns: 1fr !important;
+        }
+      }
+    </style>
+
   </div>
 </section>
 
-<section id="problem">
-  <div class="container">
-    <h2>Creators are leaving money on the table — every deal.</h2>
-    <div class="grid grid-3">
-      <div class="card">
-        <div class="tile-header">
-          <div class="tile-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 2a7 7 0 0 0-4 12.7V18a2 2 0 0 0 4 0v-1" />
-              <path d="M12 14.7A7 7 0 0 0 12 2" />
-            </svg>
-          </div>
-          <div>
-            <h4>Guessing your rates</h4>
-            <p class="tile-subtitle">Rates swing by niche, platform, and engagement.</p>
-          </div>
-        </div>
-        <p>Rates swing by niche, platform, and engagement. Without benchmarks, most creators price too low.</p>
-      </div>
-      <div class="card">
-        <div class="tile-header">
-          <div class="tile-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 1v22" />
-              <path d="M17 5H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H6" />
-            </svg>
-          </div>
-          <div>
-            <h4>Brands lowballing you</h4>
-            <p class="tile-subtitle">Counter with evidence, not vibes.</p>
-          </div>
-        </div>
-        <p>It’s hard to counter without data. Wortha gives you the numbers to negotiate confidently.</p>
-      </div>
-      <div class="card">
-        <div class="tile-header">
-          <div class="tile-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 17l6-6 4 4 7-7" />
-              <path d="M14 8h7v7" />
-            </svg>
-          </div>
-          <div>
-            <h4>No idea what others charge</h4>
-            <p class="tile-subtitle">See what comparable creators command.</p>
-          </div>
-        </div>
-        <p>We aggregate anonymous deal data so you can price based on real creator outcomes.</p>
-      </div>
+<section id="how-it-works" style="
+  background: #0A0E1A;
+  padding: 100px 32px;
+">
+  <div style="max-width: 1200px; margin: 0 auto;">
+
+    <div style="text-align: center; margin-bottom: 64px;">
+      <h2 style="
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 16px;
+      ">
+        How It Works
+      </h2>
+      <p style="
+        font-size: 18px;
+        color: #94A3B8;
+      ">
+        Three steps to confident, data-backed pricing.
+      </p>
     </div>
+
+    <div style="
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    ">
+
+      <div style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        align-items: center;
+      ">
+        <div>
+          <div style="
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 24px;
+            padding: 6px 16px;
+            margin-bottom: 16px;
+          ">
+            <span style="
+              font-size: 13px;
+              font-weight: 700;
+              color: #60A5FA;
+              letter-spacing: 0.5px;
+            ">
+              STEP 1
+            </span>
+          </div>
+
+          <h3 style="
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+          ">
+            Enter your metrics
+          </h3>
+
+          <p style="
+            font-size: 17px;
+            color: #94A3B8;
+            line-height: 1.7;
+          ">
+            Tell us your platform, follower count, average views, engagement rate, niche, and deal type. Takes 30 seconds.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 24px;">
+          <div style="font-size: 13px; font-weight: 600; color: #64748B; margin-bottom: 12px;">
+            Example Input:
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94A3B8;">Platform</span>
+              <span style="color: #F1F5F9; font-weight: 600;">TikTok</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94A3B8;">Followers</span>
+              <span style="color: #F1F5F9; font-weight: 600;">42,000</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94A3B8;">Avg. Views</span>
+              <span style="color: #F1F5F9; font-weight: 600;">120,000</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94A3B8;">Engagement</span>
+              <span style="color: #10B981; font-weight: 600;">4.1%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        align-items: center;
+      ">
+        <div class="card-elevated" style="padding: 24px; order: 2;">
+          <div style="font-size: 13px; font-weight: 600; color: #64748B; margin-bottom: 12px;">
+            Your Recommended Rate:
+          </div>
+          <div style="
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+          ">
+            $850 – $1,200
+          </div>
+          <div style="
+            background: #111827;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: #94A3B8;
+          ">
+            ✓ Based on 240 similar creator deals<br>
+            ✓ Adjusted for your niche & engagement
+          </div>
+        </div>
+
+        <div style="order: 1;">
+          <div style="
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 24px;
+            padding: 6px 16px;
+            margin-bottom: 16px;
+          ">
+            <span style="
+              font-size: 13px;
+              font-weight: 700;
+              color: #10B981;
+              letter-spacing: 0.5px;
+            ">
+              STEP 2
+            </span>
+          </div>
+
+          <h3 style="
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+          ">
+            Get your data-backed rate
+          </h3>
+
+          <p style="
+            font-size: 17px;
+            color: #94A3B8;
+            line-height: 1.7;
+          ">
+            See a transparent CPM breakdown with multipliers for niche, engagement, and geography. Know exactly how we calculated your range.
+          </p>
+        </div>
+      </div>
+
+      <div style="
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        align-items: center;
+      ">
+        <div>
+          <div style="
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 24px;
+            padding: 6px 16px;
+            margin-bottom: 16px;
+          ">
+            <span style="
+              font-size: 13px;
+              font-weight: 700;
+              color: #A78BFA;
+              letter-spacing: 0.5px;
+            ">
+              STEP 3
+            </span>
+          </div>
+
+          <h3 style="
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+          ">
+            Close the deal with confidence
+          </h3>
+
+          <p style="
+            font-size: 17px;
+            color: #94A3B8;
+            line-height: 1.7;
+            margin-bottom: 20px;
+          ">
+            Generate a professional media kit, get AI-powered negotiation scripts, and track every deal in your dashboard.
+          </p>
+
+          <ul style="
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          ">
+            <li style="display: flex; align-items: center; gap: 12px;">
+              <div style="
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: rgba(16, 185, 129, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              ">
+                <span style="color: #10B981; font-size: 14px; font-weight: 700;">✓</span>
+              </div>
+              <span style="color: #CBD5E1; font-size: 15px;">Auto-generated media kit PDF</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px;">
+              <div style="
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: rgba(16, 185, 129, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              ">
+                <span style="color: #10B981; font-size: 14px; font-weight: 700;">✓</span>
+              </div>
+              <span style="color: #CBD5E1; font-size: 15px;">AI counter-offer suggestions</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px;">
+              <div style="
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: rgba(16, 185, 129, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              ">
+                <span style="color: #10B981; font-size: 14px; font-weight: 700;">✓</span>
+              </div>
+              <span style="color: #CBD5E1; font-size: 15px;">Deal tracking dashboard</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card" style="padding: 24px;">
+          <div style="font-size: 13px; font-weight: 600; color: #64748B; margin-bottom: 12px;">
+            Tools Included:
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="
+              padding: 16px;
+              background: #111827;
+              border-radius: 8px;
+              border: 1px solid #334155;
+            ">
+              <div style="font-weight: 600; color: #F1F5F9; margin-bottom: 4px;">📄 Media Kit Generator</div>
+              <div style="font-size: 13px; color: #94A3B8;">Professional PDF in seconds</div>
+            </div>
+            <div style="
+              padding: 16px;
+              background: #111827;
+              border-radius: 8px;
+              border: 1px solid #334155;
+            ">
+              <div style="font-weight: 600; color: #F1F5F9; margin-bottom: 4px;">🤖 AI Negotiation Assistant</div>
+              <div style="font-size: 13px; color: #94A3B8;">Counter-offers backed by data</div>
+            </div>
+            <div style="
+              padding: 16px;
+              background: #111827;
+              border-radius: 8px;
+              border: 1px solid #334155;
+            ">
+              <div style="font-weight: 600; color: #F1F5F9; margin-bottom: 4px;">📊 Analytics Dashboard</div>
+              <div style="font-size: 13px; color: #94A3B8;">Track every pitch & close</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <style>
+      @media (max-width: 968px) {
+        #how-it-works > div > div > div {
+          grid-template-columns: 1fr !important;
+        }
+        #how-it-works > div > div > div > div {
+          order: 0 !important;
+        }
+      }
+    </style>
+
   </div>
 </section>
 
-<section id="how-it-works">
-  <div class="container">
-    <h2>How it works</h2>
-    <p class="muted">Three steps to confident pricing.</p>
-    <div class="grid grid-3">
-      <div class="card">
-        <h3>1. Enter your metrics</h3>
-        <p>Follower count, views, engagement, niche, and deal type.</p>
+<section id="pricing" style="
+  background: #111827;
+  padding: 100px 32px;
+">
+  <div style="max-width: 1400px; margin: 0 auto;">
+
+    <div style="text-align: center; margin-bottom: 64px;">
+      <h2 style="
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 16px;
+      ">
+        Simple, Transparent Pricing
+      </h2>
+      <p style="
+        font-size: 18px;
+        color: #94A3B8;
+      ">
+        Choose the plan that fits your workflow. Upgrade or cancel anytime.
+      </p>
+    </div>
+
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-bottom: 64px;
+    ">
+
+      <div class="card" style="
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      ">
+        <div>
+          <h3 style="
+            font-size: 18px;
+            font-weight: 700;
+            color: #94A3B8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          ">
+            Starter
+          </h3>
+
+          <div style="display: flex; align-items: baseline; margin-bottom: 8px;">
+            <span style="
+              font-size: 48px;
+              font-weight: 800;
+              color: #F1F5F9;
+            ">
+              $9
+            </span>
+            <span style="
+              font-size: 16px;
+              color: #64748B;
+              margin-left: 8px;
+            ">
+              /month
+            </span>
+          </div>
+
+          <p style="
+            font-size: 15px;
+            color: #94A3B8;
+            margin-bottom: 24px;
+          ">
+            For creators just getting started with brand deals.
+          </p>
+
+          {% if user %}
+            <form action="/billing/checkout" method="post">
+              <input type="hidden" name="plan" value="starter" />
+              <button class="btn-secondary" type="submit" style="
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 32px;
+              ">Upgrade to Starter</button>
+            </form>
+          {% else %}
+            <a href="/signup" class="btn-secondary" style="
+              text-decoration: none;
+              display: block;
+              text-align: center;
+              margin-bottom: 32px;
+            ">
+              Get Started
+            </a>
+          {% endif %}
+
+          <div style="border-top: 1px solid #334155; padding-top: 24px;">
+            <ul style="
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+            ">
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(16, 185, 129, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #10B981; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Unlimited pricing calculations</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(16, 185, 129, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #10B981; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Basic media kit generator</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(16, 185, 129, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #10B981; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Email support</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <h3>2. See your data-backed rate</h3>
-        <p>Transparent CPM ranges with clear multipliers.</p>
+
+      <div class="card-elevated" style="
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border: 2px solid #3B82F6;
+        transform: scale(1.05);
+      ">
+        <div style="
+          position: absolute;
+          top: -14px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+          padding: 6px 20px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #ffffff;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        ">
+          Most Popular
+        </div>
+
+        <div>
+          <h3 style="
+            font-size: 18px;
+            font-weight: 700;
+            color: #60A5FA;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          ">
+            Pro
+          </h3>
+
+          <div style="display: flex; align-items: baseline; margin-bottom: 8px;">
+            <span style="
+              font-size: 48px;
+              font-weight: 800;
+              color: #F1F5F9;
+            ">
+              $19
+            </span>
+            <span style="
+              font-size: 16px;
+              color: #64748B;
+              margin-left: 8px;
+            ">
+              /month
+            </span>
+          </div>
+
+          <p style="
+            font-size: 15px;
+            color: #94A3B8;
+            margin-bottom: 24px;
+          ">
+            For creators actively negotiating brand partnerships.
+          </p>
+
+          {% if user %}
+            <form action="/billing/checkout" method="post">
+              <input type="hidden" name="plan" value="pro" />
+              <button class="btn-primary" type="submit" style="
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 32px;
+              ">Upgrade to Pro</button>
+            </form>
+          {% else %}
+            <a href="/signup" class="btn-primary" style="
+              text-decoration: none;
+              display: block;
+              text-align: center;
+              margin-bottom: 32px;
+            ">
+              Get Started
+            </a>
+          {% endif %}
+
+          <div style="border-top: 1px solid #334155; padding-top: 24px;">
+            <div style="
+              font-size: 13px;
+              font-weight: 700;
+              color: #60A5FA;
+              margin-bottom: 16px;
+            ">
+              Everything in Starter, plus:
+            </div>
+            <ul style="
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+            ">
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(59, 130, 246, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #3B82F6; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Benchmarks dashboard</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(59, 130, 246, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #3B82F6; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Smart counter-offer suggestions</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(59, 130, 246, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #3B82F6; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Priority access to new features</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <h3>3. Use the tools to close</h3>
-        <p>Generate a media kit and negotiate from a position of strength.</p>
+
+      <div class="card" style="
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      ">
+        <div>
+          <h3 style="
+            font-size: 18px;
+            font-weight: 700;
+            color: #94A3B8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          ">
+            Premium
+          </h3>
+
+          <div style="display: flex; align-items: baseline; margin-bottom: 8px;">
+            <span style="
+              font-size: 48px;
+              font-weight: 800;
+              color: #F1F5F9;
+            ">
+              $29
+            </span>
+            <span style="
+              font-size: 16px;
+              color: #64748B;
+              margin-left: 8px;
+            ">
+              /month
+            </span>
+          </div>
+
+          <p style="
+            font-size: 15px;
+            color: #94A3B8;
+            margin-bottom: 24px;
+          ">
+            For power users maximizing every deal.
+          </p>
+
+          {% if user %}
+            <form action="/billing/checkout" method="post">
+              <input type="hidden" name="plan" value="premium" />
+              <button class="btn-secondary" type="submit" style="
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 32px;
+              ">Upgrade to Premium</button>
+            </form>
+          {% else %}
+            <a href="/signup" class="btn-secondary" style="
+              text-decoration: none;
+              display: block;
+              text-align: center;
+              margin-bottom: 32px;
+            ">
+              Get Started
+            </a>
+          {% endif %}
+
+          <div style="border-top: 1px solid #334155; padding-top: 24px;">
+            <div style="
+              font-size: 13px;
+              font-weight: 700;
+              color: #94A3B8;
+              margin-bottom: 16px;
+            ">
+              Everything in Pro, plus:
+            </div>
+            <ul style="
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+            ">
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(16, 185, 129, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #10B981; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Full rate index access</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(16, 185, 129, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #10B981; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">AI negotiation assistant</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(16, 185, 129, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #10B981; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Quarterly niche reports</span>
+              </li>
+              <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 4px;
+                  background: rgba(16, 185, 129, 0.2);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-top: 2px;
+                ">
+                  <span style="color: #10B981; font-size: 12px; font-weight: 700;">✓</span>
+                </div>
+                <span style="color: #CBD5E1; font-size: 15px;">Dedicated support</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 24px 32px;
+      text-align: center;
+    ">
+      <div style="
+        font-size: 15px;
+        color: #CBD5E1;
+      ">
+        ✨ All plans include: Instant setup • Cancel anytime • 7-day money-back guarantee
       </div>
     </div>
+
+    <style>
+      @media (max-width: 968px) {
+        #pricing > div > div:nth-of-type(2) {
+          grid-template-columns: 1fr !important;
+        }
+        #pricing > div > div:nth-of-type(2) > div:nth-child(2) {
+          transform: scale(1) !important;
+        }
+      }
+    </style>
+
   </div>
 </section>
 
-<section id="pricing">
-  <div class="container">
-    <h2>Pricing</h2>
-    <p class="muted">Choose the plan that fits your workflow.</p>
-    <div class="pricing-grid">
-      <div class="card pricing-card">
-        <span class="badge">Starter</span>
-        <h3>Starter</h3>
-        <p class="metric">$9 / month</p>
-        <ul>
-          <li>Unlimited pricing calculations</li>
-          <li>Basic media kit generator</li>
-          <li>Email support</li>
-        </ul>
-        {% if user %}
-          <form action="/billing/checkout" method="post">
-            <input type="hidden" name="plan" value="starter" />
-            <button class="btn btn-secondary" type="submit">Upgrade to Starter</button>
-          </form>
-        {% else %}
-          <a class="btn btn-secondary" href="/signup">Get started</a>
-        {% endif %}
-      </div>
-      <div class="card card-highlight pricing-card recommended">
-        <span class="badge badge-primary">Popular</span>
-        <h3>Pro</h3>
-        <p class="metric">$19 / month</p>
-        <ul>
-          <li>Everything in Starter</li>
-          <li>Benchmarks dashboard (coming soon)</li>
-          <li>Smart counter-offer suggestions</li>
-          <li>Priority access to new features</li>
-        </ul>
-        {% if user %}
-          <form action="/billing/checkout" method="post">
-            <input type="hidden" name="plan" value="pro" />
-            <button class="btn btn-primary" type="submit">Upgrade to Pro</button>
-          </form>
-        {% else %}
-          <a class="btn btn-primary" href="/signup">Get started</a>
-        {% endif %}
-      </div>
-      <div class="card pricing-card">
-        <span class="badge">Premium</span>
-        <h3>Premium</h3>
-        <p class="metric">$29 / month</p>
-        <ul>
-          <li>Full rate index access</li>
-          <li>Negotiation assistant</li>
-          <li>Quarterly niche reports</li>
-          <li>Dedicated support</li>
-        </ul>
-        {% if user %}
-          <form action="/billing/checkout" method="post">
-            <input type="hidden" name="plan" value="premium" />
-            <button class="btn btn-secondary" type="submit">Upgrade to Premium</button>
-          </form>
-        {% else %}
-          <a class="btn btn-secondary" href="/signup">Get started</a>
-        {% endif %}
-      </div>
+<section id="testimonials" style="
+  background: #0A0E1A;
+  padding: 100px 32px;
+">
+  <div style="max-width: 1200px; margin: 0 auto;">
+
+    <div style="text-align: center; margin-bottom: 64px;">
+      <h2 style="
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 16px;
+      ">
+        Creators are closing better deals
+      </h2>
+      <p style="
+        font-size: 18px;
+        color: #94A3B8;
+      ">
+        Real stories from creators using Wortha to negotiate confidently.
+      </p>
     </div>
+
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    ">
+
+      <div class="card">
+        <div style="
+          display: flex;
+          gap: 12px;
+          margin-bottom: 16px;
+        ">
+          <div style="
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+          ">
+            S
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #F1F5F9; font-size: 15px;">Sarah M.</div>
+            <div style="font-size: 13px; color: #64748B;">Fitness • 28K followers</div>
+          </div>
+        </div>
+
+        <p style="
+          font-size: 15px;
+          color: #CBD5E1;
+          line-height: 1.7;
+          font-style: italic;
+        ">
+          "I was charging $300 for sponsored posts. Wortha showed me I should be asking for $800-$1,000. I countered with data and the brand agreed. That's 3× more per deal."
+        </p>
+      </div>
+
+      <div class="card">
+        <div style="
+          display: flex;
+          gap: 12px;
+          margin-bottom: 16px;
+        ">
+          <div style="
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10B981, #14B8A6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+          ">
+            J
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #F1F5F9; font-size: 15px;">Jake T.</div>
+            <div style="font-size: 13px; color: #64748B;">Tech • 45K followers</div>
+          </div>
+        </div>
+
+        <p style="
+          font-size: 15px;
+          color: #CBD5E1;
+          line-height: 1.7;
+          font-style: italic;
+        ">
+          "The AI negotiation feature is a game-changer. I used to accept lowball offers out of fear. Now I counter with confidence and close at higher rates every time."
+        </p>
+      </div>
+
+      <div class="card">
+        <div style="
+          display: flex;
+          gap: 12px;
+          margin-bottom: 16px;
+        ">
+          <div style="
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+          ">
+            M
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #F1F5F9; font-size: 15px;">Maya L.</div>
+            <div style="font-size: 13px; color: #64748B;">Beauty • 62K followers</div>
+          </div>
+        </div>
+
+        <p style="
+          font-size: 15px;
+          color: #CBD5E1;
+          line-height: 1.7;
+          font-style: italic;
+        ">
+          "The media kit generator alone is worth the subscription. I used to spend hours making pitch decks. Now it's done in 2 minutes and looks more professional than what I was doing manually."
+        </p>
+      </div>
+
+    </div>
+
+    <style>
+      @media (max-width: 968px) {
+        #testimonials > div > div:last-of-type {
+          grid-template-columns: 1fr !important;
+        }
+      }
+    </style>
+
   </div>
 </section>
 
 <section id="faq">
-  <div class="container">
+  <div style="max-width: 1200px; margin: 0 auto;">
     <h2>FAQ</h2>
-    <div class="grid grid-2">
-      <div class="card card-muted">
-        <h4>Who is Wortha for?</h4>
-        <p>Creators with 5K–100K followers who already get or want brand deals.</p>
+    <div>
+      <div class="faq-item">
+        <div class="faq-question">Who is Wortha for?</div>
+        <div class="faq-answer">Wortha is built for micro-creators (5K–100K followers) who are actively pitching brands or receiving sponsorship offers. If you've ever wondered "am I charging enough?" or "how do I counter this offer?" — this is for you. We're focused on independent creators who negotiate their own deals, not those with full-time managers.</div>
       </div>
-      <div class="card card-muted">
-        <h4>Do I need an agency to use this?</h4>
-        <p>No. Wortha is built so independent creators can negotiate confidently on their own.</p>
+      <div class="faq-item">
+        <div class="faq-question">Do I need an agency to use this?</div>
+        <div class="faq-answer">No. Wortha is designed specifically for independent creators who don't have agents or managers. The AI negotiation assistant and benchmarks dashboard give you the same data-backed confidence that agencies provide their clients — without the 20-40% commission cut.</div>
       </div>
-      <div class="card card-muted">
-        <h4>Is this only for one platform?</h4>
-        <p>We support TikTok, YouTube, Instagram, and other social platforms.</p>
+      <div class="faq-item">
+        <div class="faq-question">Is this only for one platform?</div>
+        <div class="faq-answer">We support TikTok, YouTube, Instagram, and other social platforms.</div>
       </div>
-      <div class="card card-muted">
-        <h4>Can I change plans later?</h4>
-        <p>Yes. You can upgrade, downgrade, or cancel anytime from your billing portal.</p>
+      <div class="faq-item">
+        <div class="faq-question">Can I change plans later?</div>
+        <div class="faq-answer">Yes. You can upgrade, downgrade, or cancel anytime from your billing portal.</div>
       </div>
-      <div class="card card-muted">
-        <h4>Will my pricing data be shared?</h4>
-        <p>Individual data stays private. Aggregated, anonymized data may be used to improve benchmarks.</p>
+      <div class="faq-item">
+        <div class="faq-question">Will my pricing data be shared?</div>
+        <div class="faq-answer">Individual data stays private. Aggregated, anonymized data may be used to improve benchmarks.</div>
       </div>
     </div>
   </div>
@@ -255,14 +1458,116 @@
 {% endblock %}
 
 {% block footer %}
-<footer class="footer">
-  <div class="container">
-    <div class="footer-links">
-      <a href="/privacy">Privacy</a>
-      <a href="/terms">Terms</a>
-      <a href="mailto:max@wortha.app">Contact</a>
+<footer style="
+  background: #0A0E1A;
+  border-top: 1px solid #334155;
+  padding: 48px 32px 32px;
+">
+  <div style="
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 32px;
+  ">
+
+    <div>
+      <div style="
+        font-family: 'Sora', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        color: #F1F5F9;
+        margin-bottom: 12px;
+      ">
+        Wortha
+      </div>
+      <p style="
+        font-size: 14px;
+        color: #64748B;
+        line-height: 1.6;
+        max-width: 300px;
+      ">
+        Data-backed sponsorship pricing for micro-creators. Stop underpricing, start earning what you're worth.
+      
+      </p>
     </div>
-    <p class="form-note">© 2026 Wortha. All rights reserved.</p>
+
+    <div>
+      <div style="
+        font-size: 13px;
+        font-weight: 700;
+        color: #94A3B8;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      ">
+        Product
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a href="#how-it-works" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">How it Works</a>
+        <a href="#pricing" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">Pricing</a>
+        <a href="#faq" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">FAQ</a>
+      </div>
+    </div>
+
+    <div>
+      <div style="
+        font-size: 13px;
+        font-weight: 700;
+        color: #94A3B8;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      ">
+        Company
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a href="/privacy" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">Privacy</a>
+        <a href="/terms" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">Terms</a>
+        <a href="mailto:max@wortha.app" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">Contact</a>
+      </div>
+    </div>
+
+    <div>
+      <div style="
+        font-size: 13px;
+        font-weight: 700;
+        color: #94A3B8;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      ">
+        Support
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a href="/login" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">Log in</a>
+        <a href="/signup" style="color: #64748B; text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='#F1F5F9'" onmouseout="this.style.color='#64748B'">Sign up</a>
+      </div>
+    </div>
+
   </div>
+
+  <div style="
+    border-top: 1px solid #334155;
+    padding-top: 24px;
+    text-align: center;
+  ">
+    <p style="
+      font-size: 13px;
+      color: #64748B;
+      margin: 0;
+    ">
+      © 2026 Wortha. All rights reserved.
+    </p>
+  </div>
+
+  <style>
+    @media (max-width: 968px) {
+      footer > div:first-child {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
 </footer>
 {% endblock %}

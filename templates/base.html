@@ -17,45 +17,45 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
+  {% block nav %}
   <header class="navbar">
     <div class="container">
       <a class="logo" href="/">Wortha</a>
-      {% block nav %}
-        {% if user %}
-          <div class="nav-links">
-            <a href="/dashboard">Dashboard</a>
-            <a href="/calculator">Calculator</a>
-            {% if user.plan and user.plan|lower in ["pro", "premium"] %}
-              <a href="/media-kit">Media Kit</a>
-            {% endif %}
-            <a href="/deals/new">Deals</a>
-            {% if user.plan and user.plan|lower == "premium" %}
-              <a href="/rate-index">Rate Index</a>
-              <a href="/reports/niche">Niche Reports</a>
-            {% endif %}
-            {% if user.plan and user.plan|lower in ["pro", "premium"] %}
-              <a href="/analytics">Analytics</a>
-            {% endif %}
-            {% if user.plan and user.plan|lower in ["pro", "premium"] %}
-              <a href="/insights">Insights</a>
-            {% endif %}
-          </div>
-          <div class="nav-actions">
-            <a class="btn btn-ghost" href="/billing/portal">Manage billing</a>
-            <form action="/logout" method="post" class="logout-form">
-              <button class="btn btn-ghost" type="submit">Log out</button>
-            </form>
-          </div>
-        {% else %}
-          <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/login">Log in</a>
-            <a href="/signup">Sign up</a>
-          </div>
-        {% endif %}
-      {% endblock %}
+      {% if user %}
+        <div class="nav-links">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/calculator">Calculator</a>
+          {% if user.plan and user.plan|lower in ["pro", "premium"] %}
+            <a href="/media-kit">Media Kit</a>
+          {% endif %}
+          <a href="/deals/new">Deals</a>
+          {% if user.plan and user.plan|lower == "premium" %}
+            <a href="/rate-index">Rate Index</a>
+            <a href="/reports/niche">Niche Reports</a>
+          {% endif %}
+          {% if user.plan and user.plan|lower in ["pro", "premium"] %}
+            <a href="/analytics">Analytics</a>
+          {% endif %}
+          {% if user.plan and user.plan|lower in ["pro", "premium"] %}
+            <a href="/insights">Insights</a>
+          {% endif %}
+        </div>
+        <div class="nav-actions">
+          <a class="btn btn-ghost" href="/billing/portal">Manage billing</a>
+          <form action="/logout" method="post" class="logout-form">
+            <button class="btn btn-ghost" type="submit">Log out</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/login">Log in</a>
+          <a href="/signup">Sign up</a>
+        </div>
+      {% endif %}
     </div>
   </header>
+  {% endblock %}
 
   <main class="main-content">
     <div class="container">
