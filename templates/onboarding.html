@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-header page-hero">
+  <h2>Welcome to Wortha</h2>
+  <p>Let’s set up your creator profile so your pricing recommendations are more accurate.</p>
+</section>
+
+<section class="card">
+  <div class="card-header">
+    <div>
+      <h3>Creator basics</h3>
+      <p class="muted">You can update these later in your media kit settings.</p>
+    </div>
+    <span class="badge">Step 1 of 1</span>
+  </div>
+  <form action="/onboarding" method="post" class="form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Display name</label>
+        <input type="text" name="display_name" value="{{ profile.display_name }}" required />
+      </div>
+      <div class="form-group">
+        <label>Tagline</label>
+        <input type="text" name="tagline" value="{{ profile.tagline or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Primary platform</label>
+        <select name="primary_platform" required>
+          {% for value, label in PLATFORMS %}
+            <option value="{{ value }}" {% if profile.primary_platform == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Other platform (optional)</label>
+        <input type="text" name="primary_platform_other" value="{{ profile.primary_platform_other or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Follower count</label>
+        <input type="number" name="followers" value="{{ profile.followers or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Average views</label>
+        <input type="number" name="avg_views" value="{{ profile.avg_views or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Engagement rate (%)</label>
+        <input type="number" step="0.01" name="engagement_rate" value="{{ profile.engagement_rate or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Niche</label>
+        <select name="niche">
+          {% for value, label in NICHES %}
+            <option value="{{ value }}" {% if profile.niche == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Other niche (optional)</label>
+        <input type="text" name="niche_other" value="{{ profile.niche_other or '' }}" />
+      </div>
+      <div class="form-group">
+        <label>Primary audience location</label>
+        <select name="audience_location">
+          {% for value, label in GEO_REGIONS %}
+            <option value="{{ value }}" {% if profile.audience_location == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Contact email</label>
+        <input type="email" name="contact_email" value="{{ profile.contact_email or '' }}" />
+      </div>
+    </div>
+    <div class="button-row">
+      <button class="btn btn-primary" type="submit">Finish setup</button>
+      <button class="btn btn-ghost" type="submit" name="skip" value="1">Skip for now</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

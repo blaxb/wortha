@@ -27,6 +27,9 @@ class User(SQLModel, table=True):
     plan: str = Field(default="free", nullable=False)
     stripe_customer_id: Optional[str] = Field(default=None, nullable=True)
     stripe_subscription_id: Optional[str] = Field(default=None, nullable=True)
+    reset_token: Optional[str] = Field(default=None, nullable=True, index=True)
+    reset_token_expires_at: Optional[datetime] = Field(default=None, nullable=True)
+    onboarding_completed: bool = Field(default=True, nullable=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -183,6 +186,7 @@ def create_db_and_tables() -> None:
     SQLModel.metadata.create_all(engine)
     ensure_plan_column_exists()
     ensure_billing_columns_exist()
+    ensure_user_optional_columns_exist()
     ensure_optional_columns_exist()
 
 
@@ -209,6 +213,25 @@ def ensure_billing_columns_exist() -> None:
             cursor.execute("ALTER TABLE user ADD COLUMN stripe_customer_id TEXT")
         if "stripe_subscription_id" not in columns:
             cursor.execute("ALTER TABLE user ADD COLUMN stripe_subscription_id TEXT")
+        connection.commit()
+
+
+def ensure_user_optional_columns_exist() -> None:
+    db_path = DATABASE_URL.replace("sqlite:///", "")
+    with sqlite3.connect(db_path) as connection:
+        cursor = connection.cursor()
+        cursor.execute("PRAGMA table_info(user)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "reset_token" not in columns:
+            cursor.execute("ALTER TABLE user ADD COLUMN reset_token TEXT")
+        if "reset_token_expires_at" not in columns:
+            cursor.execute(
+                "ALTER TABLE user ADD COLUMN reset_token_expires_at TIMESTAMP"
+            )
+        if "onboarding_completed" not in columns:
+            cursor.execute(
+                "ALTER TABLE user ADD COLUMN onboarding_completed INTEGER NOT NULL DEFAULT 1"
+            )
         connection.commit()
 
 

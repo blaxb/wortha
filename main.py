@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 import io
 import logging
+import secrets
 from typing import Optional
 
 import os
@@ -15,6 +16,7 @@ from sqlalchemy import func
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 import stripe
 
 from auth import (
@@ -96,11 +98,56 @@ if not session_secret:
     # SESSION_SECRET_KEY is expected in the environment for production deployments.
     session_secret = "dev-insecure-session-key"
 
+def _env_true(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+
+        csp = "; ".join(
+            [
+                "default-src 'self'",
+                "base-uri 'self'",
+                "form-action 'self'",
+                "frame-ancestors 'none'",
+                "object-src 'none'",
+                "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com",
+                "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+                "connect-src 'self' https://www.google-analytics.com",
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                "font-src 'self' https://fonts.gstatic.com",
+            ]
+        )
+
+        response.headers["Content-Security-Policy"] = csp
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = (
+            "geolocation=(), microphone=(), camera=(), payment=()"
+        )
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-site"
+
+        force_hsts = _env_true(os.environ.get("FORCE_HSTS"))
+        if force_hsts or request.url.scheme == "https":
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains; preload"
+            )
+
+        return response
+
+
 app.add_middleware(
     SessionMiddleware,
     secret_key=session_secret,
     same_site="lax",
+    https_only=_env_true(os.environ.get("SESSION_COOKIE_SECURE")),
 )
+
+app.add_middleware(SecurityHeadersMiddleware)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -337,6 +384,7 @@ def signup(
         email=normalized_email,
         username=normalized_username,
         hashed_password=hash_password(password),
+        onboarding_completed=False,
     )
     session.add(user)
     try:
@@ -355,7 +403,7 @@ def signup(
         )
 
     login_user(request, user)
-    return RedirectResponse(url="/dashboard", status_code=303)
+    return RedirectResponse(url="/onboarding", status_code=303)
 
 
 @app.get("/login", response_class=HTMLResponse)
@@ -381,6 +429,8 @@ def login(
         )
 
     login_user(request, user)
+    if not user.onboarding_completed:
+        return RedirectResponse(url="/onboarding", status_code=303)
     return RedirectResponse(url="/dashboard", status_code=303)
 
 
@@ -390,11 +440,221 @@ def logout(request: Request):
     return RedirectResponse(url="/", status_code=303)
 
 
+@app.get("/forgot-password", response_class=HTMLResponse)
+def forgot_password_form(request: Request, session: Session = Depends(get_session)):
+    user_id = request.session.get("user_id")
+    user = session.get(User, user_id) if user_id else None
+    return templates.TemplateResponse(
+        "forgot_password.html",
+        {"request": request, "user": user, "message": None, "reset_url": None},
+    )
+
+
+@app.post("/forgot-password", response_class=HTMLResponse)
+def forgot_password(
+    request: Request,
+    email: str = Form(...),
+    session: Session = Depends(get_session),
+):
+    normalized_email = normalize_email(email)
+    statement = select(User).where(User.email == normalized_email)
+    user = session.exec(statement).first()
+
+    reset_url = None
+    if user:
+        token = secrets.token_urlsafe(32)
+        user.reset_token = token
+        user.reset_token_expires_at = datetime.utcnow() + timedelta(hours=1)
+        session.add(user)
+        session.commit()
+        if os.environ.get("SHOW_RESET_LINK", "").lower() in {"1", "true", "yes"}:
+            reset_url = f"{get_app_base_url(request)}/reset-password?token={token}"
+
+    message = "If an account exists for that email, you'll receive a reset link."
+    return templates.TemplateResponse(
+        "forgot_password.html",
+        {"request": request, "user": None, "message": message, "reset_url": reset_url},
+    )
+
+
+@app.get("/reset-password", response_class=HTMLResponse)
+def reset_password_form(
+    request: Request,
+    token: str | None = None,
+    session: Session = Depends(get_session),
+):
+    if not token:
+        return templates.TemplateResponse(
+            "reset_password.html",
+            {
+                "request": request,
+                "token": None,
+                "error": "Reset link is invalid or missing.",
+            },
+            status_code=400,
+        )
+    statement = select(User).where(User.reset_token == token)
+    user = session.exec(statement).first()
+    if not user or not user.reset_token_expires_at:
+        return templates.TemplateResponse(
+            "reset_password.html",
+            {"request": request, "token": None, "error": "Reset link is invalid."},
+            status_code=400,
+        )
+    if user.reset_token_expires_at < datetime.utcnow():
+        return templates.TemplateResponse(
+            "reset_password.html",
+            {"request": request, "token": None, "error": "Reset link has expired."},
+            status_code=400,
+        )
+    return templates.TemplateResponse(
+        "reset_password.html",
+        {"request": request, "token": token, "error": None},
+    )
+
+
+@app.post("/reset-password", response_class=HTMLResponse)
+def reset_password(
+    request: Request,
+    token: str = Form(...),
+    password: str = Form(...),
+    confirm_password: str = Form(...),
+    session: Session = Depends(get_session),
+):
+    if password != confirm_password:
+        return templates.TemplateResponse(
+            "reset_password.html",
+            {"request": request, "token": token, "error": "Passwords do not match."},
+            status_code=400,
+        )
+    statement = select(User).where(User.reset_token == token)
+    user = session.exec(statement).first()
+    if not user or not user.reset_token_expires_at:
+        return templates.TemplateResponse(
+            "reset_password.html",
+            {"request": request, "token": None, "error": "Reset link is invalid."},
+            status_code=400,
+        )
+    if user.reset_token_expires_at < datetime.utcnow():
+        return templates.TemplateResponse(
+            "reset_password.html",
+            {"request": request, "token": None, "error": "Reset link has expired."},
+            status_code=400,
+        )
+
+    user.hashed_password = hash_password(password)
+    user.reset_token = None
+    user.reset_token_expires_at = None
+    session.add(user)
+    session.commit()
+    return templates.TemplateResponse(
+        "reset_password.html",
+        {
+            "request": request,
+            "token": None,
+            "error": None,
+            "success": "Password updated. You can now log in.",
+        },
+    )
+
+
+@app.get("/onboarding", response_class=HTMLResponse)
+def onboarding_form(
+    request: Request,
+    session: Session = Depends(get_session),
+    user: User = Depends(get_current_user),
+):
+    if user.onboarding_completed:
+        return RedirectResponse(url="/dashboard", status_code=303)
+    profile = get_or_create_creator_profile(session, user.id)
+    return templates.TemplateResponse(
+        "onboarding.html",
+        {
+            "request": request,
+            "user": user,
+            "profile": profile,
+            "PLATFORMS": PLATFORMS,
+            "NICHES": NICHES,
+            "GEO_REGIONS": GEO_REGIONS,
+        },
+    )
+
+
+@app.post("/onboarding")
+def onboarding_submit(
+    request: Request,
+    session: Session = Depends(get_session),
+    user: User = Depends(get_current_user),
+    display_name: str = Form(""),
+    tagline: str = Form(""),
+    primary_platform: str = Form(""),
+    primary_platform_other: str = Form(""),
+    followers: str = Form(""),
+    avg_views: str = Form(""),
+    engagement_rate: str = Form(""),
+    niche: str = Form(""),
+    niche_other: str = Form(""),
+    audience_location: str = Form(""),
+    contact_email: str = Form(""),
+    skip: str | None = Form(None),
+):
+    if skip:
+        user.onboarding_completed = True
+        session.add(user)
+        session.commit()
+        return RedirectResponse(url="/dashboard", status_code=303)
+
+    def to_int(value: str) -> int | None:
+        value = value.strip()
+        if not value:
+            return None
+        try:
+            return int(value)
+        except ValueError:
+            return None
+
+    def to_float(value: str) -> float | None:
+        value = value.strip()
+        if not value:
+            return None
+        try:
+            return float(value)
+        except ValueError:
+            return None
+
+    profile = get_or_create_creator_profile(session, user.id)
+    profile.display_name = display_name.strip() or profile.display_name
+    profile.tagline = tagline.strip() or None
+    platform_code = normalize_platform(primary_platform)
+    profile.primary_platform = platform_code
+    profile.primary_platform_other = (
+        primary_platform_other.strip() or None
+        if platform_code == "other"
+        else None
+    )
+    profile.followers = to_int(followers)
+    profile.avg_views = to_int(avg_views)
+    profile.engagement_rate = to_float(engagement_rate)
+    niche_code = normalize_niche(niche)
+    profile.niche = niche_code
+    profile.niche_other = niche_other.strip() or None if niche_code == "other" else None
+    profile.audience_location = normalize_geo_region(audience_location)
+    profile.contact_email = contact_email.strip() or None
+
+    user.onboarding_completed = True
+    session.add(profile)
+    session.add(user)
+    session.commit()
+    return RedirectResponse(url="/dashboard", status_code=303)
+
+
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(
     request: Request,
     user: User = Depends(get_current_user),
 ):
+    if not user.onboarding_completed:
+        return RedirectResponse(url="/onboarding", status_code=303)
     return templates.TemplateResponse(
         "dashboard.html", {"request": request, "user": user}
     )
