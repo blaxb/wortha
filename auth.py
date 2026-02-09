@@ -51,3 +51,13 @@ def get_current_user(
     if not user:
         raise HTTPException(status_code=303, headers={"Location": "/login"})
     return user
+
+
+def get_optional_user(
+    request: Request,
+    session: Session = Depends(get_session),
+) -> User | None:
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return None
+    return session.get(User, user_id)

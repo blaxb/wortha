@@ -79,4 +79,16 @@
     </div>
   </form>
 </section>
+{% if request.query_params.get('signup') == 'success' %}
+  <script>
+    (function() {
+      if (window.__gaSignupCompleteSent) return;
+      if (typeof window.gtag !== 'function') return;
+      window.__gaSignupCompleteSent = true;
+      window.gtag('event', 'signup_complete', {
+        method: '{{ request.query_params.get("method", "email") }}'
+      });
+    })();
+  </script>
+{% endif %}
 {% endblock %}

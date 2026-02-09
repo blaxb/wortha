@@ -68,4 +68,12 @@
     </div>
   </div>
 </section>
+<script>
+  (function() {
+    if (window.__gaPricingPageViewSent) return;
+    if (typeof window.gtag !== 'function') return;
+    window.__gaPricingPageViewSent = true;
+    window.gtag('event', 'pricing_page_view');
+  })();
+</script>
 {% endblock %}

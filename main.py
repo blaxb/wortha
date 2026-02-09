@@ -22,6 +22,7 @@ import stripe
 from auth import (
     authenticate_user,
     get_current_user,
+    get_optional_user,
     hash_password,
     login_user,
     logout_user,
@@ -403,7 +404,7 @@ def signup(
         )
 
     login_user(request, user)
-    return RedirectResponse(url="/onboarding", status_code=303)
+    return RedirectResponse(url="/onboarding?signup=success&method=email", status_code=303)
 
 
 @app.get("/login", response_class=HTMLResponse)
@@ -701,11 +702,11 @@ def insights(
 @app.get("/calculator", response_class=HTMLResponse)
 def calculator(
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User | None = Depends(get_optional_user),
 ):
-    normalized_plan = (user.plan or "free").lower()
-    is_pro_or_premium = normalized_plan in {"pro", "premium"}
-    is_free_plan = normalized_plan == "free"
+    normalized_plan = (user.plan or "free").lower() if user else "free"
+    is_pro_or_premium = bool(user) and normalized_plan in {"pro", "premium"}
+    is_free_plan = bool(user) and normalized_plan == "free"
     return templates.TemplateResponse(
         "calculator.html",
         {
@@ -1373,7 +1374,7 @@ def calculator_submit(
     engagement_rate: Optional[str] = Form(None),
     geo_region: Optional[str] = Form("us"),
     session: Session = Depends(get_session),
-    user: User = Depends(get_current_user),
+    user: User | None = Depends(get_optional_user),
 ):
     import html
 
@@ -1397,9 +1398,9 @@ def calculator_submit(
     avg_views_value = to_int(avg_views)
     engagement_value = to_float(engagement_rate)
 
-    normalized_plan = (user.plan or "free").lower()
-    is_pro_or_premium = normalized_plan in {"pro", "premium"}
-    is_free_plan = normalized_plan == "free"
+    normalized_plan = (user.plan or "free").lower() if user else "free"
+    is_pro_or_premium = bool(user) and normalized_plan in {"pro", "premium"}
+    is_free_plan = bool(user) and normalized_plan == "free"
 
     now = datetime.utcnow()
     month_start = datetime(now.year, now.month, 1)
@@ -1408,7 +1409,7 @@ def calculator_submit(
     else:
         next_month = datetime(now.year, now.month + 1, 1)
 
-    if is_free_plan:
+    if is_free_plan and user:
         statement = (
             select(func.count())
             .select_from(Calculation)
@@ -1561,27 +1562,28 @@ def calculator_submit(
             .strip()
         )
 
-    calculation = Calculation(
-        user_id=user.id,
-        platform=platform_code,
-        niche=niche_code,
-        niche_other=niche_other_value,
-        deal_type=deal_type_code,
-        deal_type_other=deal_type_other_value,
-        geo_region=geo_region_code,
-        followers=followers_value,
-        avg_views=avg_views_value,
-        engagement_rate=engagement_value,
-        recommended_price=recommended_price,
-        recommended_min=result["recommended_min"],
-        recommended_max=result["recommended_max"],
-        cpmm_base=result["base_cpm"],
-        engagement_multiplier=result["engagement_multiplier"],
-        geo_multiplier=result["geo_multiplier"],
-        ai_explanation=explanation,
-    )
-    session.add(calculation)
-    session.commit()
+    if user:
+        calculation = Calculation(
+            user_id=user.id,
+            platform=platform_code,
+            niche=niche_code,
+            niche_other=niche_other_value,
+            deal_type=deal_type_code,
+            deal_type_other=deal_type_other_value,
+            geo_region=geo_region_code,
+            followers=followers_value,
+            avg_views=avg_views_value,
+            engagement_rate=engagement_value,
+            recommended_price=recommended_price,
+            recommended_min=result["recommended_min"],
+            recommended_max=result["recommended_max"],
+            cpmm_base=result["base_cpm"],
+            engagement_multiplier=result["engagement_multiplier"],
+            geo_multiplier=result["geo_multiplier"],
+            ai_explanation=explanation,
+        )
+        session.add(calculation)
+        session.commit()
 
     return templates.TemplateResponse(
         "calculator.html",

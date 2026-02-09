@@ -159,7 +159,7 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
       ">
-        Stop Underpricing Your Brand Deals
+        Instant sponsorship pricing calculator for creators
       </h1>
 
       <p style="
@@ -169,32 +169,23 @@
         margin-bottom: 32px;
         max-width: 540px;
       ">
-        Get data-backed pricing in 30 seconds. No more guessing, no more leaving money on the table. Built from real creator deals.
+        Drop in your stats, see a suggested rate range, and then save it into a media kit. No guessing, no pressure.
       </p>
 
       <div style="
-        display: flex;
-        align-items: center;
-        gap: 24px;
+        font-size: 14px;
+        color: #94A3B8;
         margin-bottom: 32px;
       ">
-        <div>
-          <div style="font-size: 28px; font-weight: 800; color: #3B82F6;">1,200+</div>
-          <div style="font-size: 13px; color: #64748B;">Creator deals analyzed</div>
-        </div>
-        <div style="width: 1px; height: 40px; background: #334155;"></div>
-        <div>
-          <div style="font-size: 28px; font-weight: 800; color: #10B981;">35%</div>
-          <div style="font-size: 13px; color: #64748B;">Avg. rate increase</div>
-        </div>
+        Beta access: calculate instantly. Sign up only if you want to save results.
       </div>
 
       <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-        <a href="/signup" class="btn-primary" style="text-decoration: none; display: inline-block;">
-          Calculate Your Rate — Free
+        <a href="#calculator" class="btn-primary" style="text-decoration: none; display: inline-block;">
+          Try the Calculator
         </a>
-        <a href="#how-it-works" class="btn-secondary" style="text-decoration: none; display: inline-block;">
-          See How It Works
+        <a href="/signup" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+          Sign Up to Save + Get Media Kit
         </a>
       </div>
     </div>
@@ -211,26 +202,7 @@
         letter-spacing: 1px;
         margin-bottom: 16px;
       ">
-        Recommended Rate
-      </div>
-
-      <div style="
-        font-size: 48px;
-        font-weight: 800;
-        background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 8px;
-      ">
-        $850 – $1,200
-      </div>
-
-      <div style="
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-      ">
-        For a TikTok Reel sponsorship
+        What You Get
       </div>
 
       <div style="
@@ -245,21 +217,21 @@
           color: #64748B;
           margin-bottom: 12px;
         ">
-          How we calculated this:
+          In seconds you will see:
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 14px; color: #CBD5E1;">Base CPM</span>
-            <span style="font-size: 15px; font-weight: 700; color: #F1F5F9;">$18.50</span>
+            <span style="font-size: 14px; color: #CBD5E1;">Suggested rate range</span>
+            <span style="font-size: 15px; font-weight: 700; color: #F1F5F9;">Your numbers</span>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 14px; color: #CBD5E1;">Niche multiplier</span>
-            <span style="font-size: 15px; font-weight: 700; color: #10B981;">1.2×</span>
+            <span style="font-size: 14px; color: #CBD5E1;">Transparent CPM logic</span>
+            <span style="font-size: 15px; font-weight: 700; color: #10B981;">No fluff</span>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 14px; color: #CBD5E1;">Engagement rate</span>
-            <span style="font-size: 15px; font-weight: 700; color: #60A5FA;">4.1%</span>
+            <span style="font-size: 14px; color: #CBD5E1;">Share-ready summary</span>
+            <span style="font-size: 15px; font-weight: 700; color: #60A5FA;">Save it</span>
           </div>
         </div>
       </div>
@@ -274,7 +246,7 @@
         color: #94A3B8;
         text-align: center;
       ">
-        ✨ Try it yourself — no signup required
+        Try the calculator below — no signup required
       </div>
     </div>
 
@@ -291,6 +263,130 @@
       }
     }
   </style>
+</section>
+
+<section id="calculator" style="
+  background: #111827;
+  padding: 100px 32px;
+">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 48px;">
+      <h2 style="
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        color: #F1F5F9;
+      ">
+        Try the calculator (no signup required)
+      </h2>
+      <p style="
+        font-size: 18px;
+        color: #94A3B8;
+        max-width: 620px;
+        margin: 0 auto;
+      ">
+        Calculate a fair sponsorship range in seconds. Sign up only if you want to save it and generate a media kit.
+      </p>
+    </div>
+
+    <div style="
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    ">
+      <form id="calculator-form" class="card" style="padding: 28px;">
+        <div style="display: grid; gap: 16px;">
+          <div>
+            <label for="calc-platform" style="display: block; font-size: 14px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px;">Platform</label>
+            <select id="calc-platform" name="platform" required style="width: 100%;">
+              <option value="">Select one</option>
+              {% for value, label in PLATFORMS %}
+                <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="calc-niche" style="display: block; font-size: 14px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px;">Niche</label>
+            <select id="calc-niche" name="niche" required style="width: 100%;">
+              <option value="">Select one</option>
+              {% for value, label in NICHES %}
+                <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="calc-followers" style="display: block; font-size: 14px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px;">Follower count</label>
+            <input id="calc-followers" name="followers" type="number" min="0" placeholder="25000" style="width: 100%;" required />
+          </div>
+          <div>
+            <label for="calc-views" style="display: block; font-size: 14px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px;">Average views (optional)</label>
+            <input id="calc-views" name="avg_views" type="number" min="0" placeholder="12000" style="width: 100%;" />
+          </div>
+          <div>
+            <label for="calc-engagement" style="display: block; font-size: 14px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px;">Engagement rate (%)</label>
+            <input id="calc-engagement" name="engagement_rate" type="number" min="0" step="0.1" placeholder="3.5" style="width: 100%;" required />
+          </div>
+        </div>
+
+        <button class="btn-primary" type="submit" style="margin-top: 20px; width: 100%;">Calculate my range</button>
+        <p style="margin-top: 12px; font-size: 13px; color: #94A3B8;">
+          Assumes a primarily US/Canada audience. You can refine this after signup.
+        </p>
+      </form>
+
+      <div class="card-elevated" style="padding: 28px; min-height: 320px;">
+        <div aria-live="polite" id="calc-result">
+          <div style="font-size: 12px; font-weight: 700; color: #64748B; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
+            Recommended Range
+          </div>
+          <div id="calc-range" style="
+            font-size: 40px;
+            font-weight: 800;
+            color: #F1F5F9;
+            margin-bottom: 10px;
+          ">
+            $—
+          </div>
+          <div id="calc-mid" style="font-size: 14px; color: #94A3B8; margin-bottom: 18px;">
+            Enter your inputs to see a suggested range.
+          </div>
+          <div id="calc-breakdown" style="
+            background: #0F172A;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 13px;
+            color: #CBD5E1;
+            min-height: 96px;
+          ">
+            The breakdown will appear here after you calculate.
+          </div>
+        </div>
+
+        <div style="
+          margin-top: 20px;
+          padding-top: 16px;
+          border-top: 1px solid #334155;
+        ">
+          <div style="font-size: 14px; color: #CBD5E1; margin-bottom: 12px;">
+            Want to save this range and generate a media kit?
+          </div>
+          <a href="/signup" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+            Sign Up to Save + Get Media Kit
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @media (max-width: 968px) {
+        #calculator > div > div:last-of-type {
+          grid-template-columns: 1fr !important;
+        }
+      }
+    </style>
+  </div>
 </section>
 
 <section id="problem" style="
@@ -366,7 +462,7 @@
             THE FIX
           </div>
           <div style="font-size: 14px; color: #CBD5E1;">
-            Data-backed CPM ranges built from 1,200+ real creator deals.
+            Clear CPM-based ranges built from your metrics and early creator feedback.
           </div>
         </div>
       </div>
@@ -413,7 +509,7 @@
             THE FIX
           </div>
           <div style="font-size: 14px; color: #CBD5E1;">
-            AI negotiation assistant gives you counter-offers backed by real numbers.
+            Negotiation prompts help you draft confident counter-offers.
           </div>
         </div>
       </div>
@@ -460,7 +556,7 @@
             THE FIX
           </div>
           <div style="font-size: 14px; color: #CBD5E1;">
-            Anonymized rate index shows what comparable creators actually charge.
+            A community rate index is growing as the beta adds more creator data.
           </div>
         </div>
       </div>
@@ -544,7 +640,7 @@
             color: #94A3B8;
             line-height: 1.7;
           ">
-            Tell us your platform, follower count, average views, engagement rate, niche, and deal type. Takes 30 seconds.
+            Tell us your platform, follower count, average views, engagement rate, and niche. Takes 30 seconds.
           </p>
         </div>
 
@@ -591,7 +687,7 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
           ">
-            $850 – $1,200
+            Your range appears here
           </div>
           <div style="
             background: #111827;
@@ -600,7 +696,7 @@
             font-size: 13px;
             color: #94A3B8;
           ">
-            ✓ Based on 240 similar creator deals<br>
+            ✓ Transparent CPM logic<br>
             ✓ Adjusted for your niche & engagement
           </div>
         </div>
@@ -1291,13 +1387,13 @@
         font-weight: 800;
         margin-bottom: 16px;
       ">
-        Creators are closing better deals
+        Early feedback from creators
       </h2>
       <p style="
         font-size: 18px;
         color: #94A3B8;
       ">
-        Real stories from creators using Wortha to negotiate confidently.
+        Honest notes from beta users testing the calculator.
       </p>
     </div>
 
@@ -1308,113 +1404,50 @@
     ">
 
       <div class="card">
-        <div style="
-          display: flex;
-          gap: 12px;
-          margin-bottom: 16px;
-        ">
-          <div style="
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
-          ">
-            S
-          </div>
-          <div>
-            <div style="font-weight: 700; color: #F1F5F9; font-size: 15px;">Sarah M.</div>
-            <div style="font-size: 13px; color: #64748B;">Fitness • 28K followers</div>
-          </div>
-        </div>
-
         <p style="
           font-size: 15px;
           color: #CBD5E1;
           line-height: 1.7;
           font-style: italic;
         ">
-          "I was charging $300 for sponsored posts. Wortha showed me I should be asking for $800-$1,000. I countered with data and the brand agreed. That's 3× more per deal."
+          "It gave me a clearer starting point for my rates instead of guessing."
         </p>
+        <div style="margin-top: 12px; font-size: 13px; color: #64748B;">Creator in beauty niche</div>
       </div>
 
       <div class="card">
-        <div style="
-          display: flex;
-          gap: 12px;
-          margin-bottom: 16px;
-        ">
-          <div style="
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #10B981, #14B8A6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
-          ">
-            J
-          </div>
-          <div>
-            <div style="font-weight: 700; color: #F1F5F9; font-size: 15px;">Jake T.</div>
-            <div style="font-size: 13px; color: #64748B;">Tech • 45K followers</div>
-          </div>
-        </div>
-
         <p style="
           font-size: 15px;
           color: #CBD5E1;
           line-height: 1.7;
           font-style: italic;
         ">
-          "The AI negotiation feature is a game-changer. I used to accept lowball offers out of fear. Now I counter with confidence and close at higher rates every time."
+          "Having a benchmark range makes it easier to push back on low offers."
         </p>
+        <div style="margin-top: 12px; font-size: 13px; color: #64748B;">Gaming creator</div>
       </div>
 
       <div class="card">
-        <div style="
-          display: flex;
-          gap: 12px;
-          margin-bottom: 16px;
-        ">
-          <div style="
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #F59E0B, #EF4444);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
-          ">
-            M
-          </div>
-          <div>
-            <div style="font-weight: 700; color: #F1F5F9; font-size: 15px;">Maya L.</div>
-            <div style="font-size: 13px; color: #64748B;">Beauty • 62K followers</div>
-          </div>
-        </div>
-
         <p style="
           font-size: 15px;
           color: #CBD5E1;
           line-height: 1.7;
           font-style: italic;
         ">
-          "The media kit generator alone is worth the subscription. I used to spend hours making pitch decks. Now it's done in 2 minutes and looks more professional than what I was doing manually."
+          "I like that it turns my stats into actual numbers I can send to brands."
         </p>
+        <div style="margin-top: 12px; font-size: 13px; color: #64748B;">Lifestyle creator</div>
       </div>
 
+    </div>
+
+    <div style="
+      margin-top: 28px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748B;
+    ">
+      Wortha is in beta and currently working with a small group of creators. We’re being intentional and transparent as we grow.
     </div>
 
     <style>
@@ -1455,6 +1488,183 @@
     </div>
   </div>
 </section>
+
+<section id="founder" style="
+  background: #111827;
+  padding: 90px 32px;
+">
+  <div style="max-width: 1000px; margin: 0 auto;">
+    <div class="card-elevated" style="
+      padding: 36px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+    ">
+      <h2 style="
+        font-size: 34px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        color: #F1F5F9;
+      ">
+        Built for creators undercharging on brand deals
+      </h2>
+      <p style="
+        font-size: 17px;
+        color: #CBD5E1;
+        line-height: 1.7;
+        margin-bottom: 18px;
+      ">
+        I’m Max, the founder of Wortha. After watching creators guess on their sponsorship rates and leave money on the table, I built this tool to turn their real stats into fair pricing ranges. The goal is simple: help you stop underpricing and start negotiating with confidence.
+      </p>
+      <p style="
+        font-size: 14px;
+        color: #94A3B8;
+        margin-bottom: 24px;
+      ">
+        Wortha is a bootstrapped beta product — I’m iterating directly with early users, so your feedback genuinely shapes where this goes.
+      </p>
+      <a href="https://www.linkedin.com/in/maxblackmon/" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+        Connect with Max on LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+<script>
+  (function() {
+    var form = document.getElementById('calculator-form');
+    if (!form) return;
+
+    var platformCpm = {
+      youtube: 15,
+      instagram: 12,
+      tiktok: 10,
+      linkedin: 18,
+      twitter: 11,
+      twitch: 14,
+      podcast: 20,
+      newsletter: 16,
+      other: 8
+    };
+
+    var nicheMultipliers = {
+      finance: 1.4,
+      investing: 1.4,
+      business: 1.4,
+      beauty: 1.2,
+      fashion: 1.2,
+      tech: 1.3,
+      gaming: 1.3,
+      fitness: 1.15,
+      health: 1.15
+    };
+
+    function roundPrice(value, increment) {
+      if (!value || value <= 0) return 0;
+      var step = increment || 5;
+      return Math.floor((value + step / 2) / step) * step;
+    }
+
+    function priceBand(center, engagement) {
+      var lowMultiplier = 0.9;
+      var highMultiplier = 1.1;
+      if (engagement !== null && !Number.isNaN(engagement)) {
+        if (engagement >= 6) {
+          highMultiplier = 1.2;
+        } else if (engagement >= 4) {
+          highMultiplier = 1.15;
+        } else if (engagement < 1) {
+          lowMultiplier = 0.85;
+          highMultiplier = 1.05;
+        }
+      }
+      return [center * lowMultiplier, center * highMultiplier];
+    }
+
+    function calculateRange(values) {
+      var platformKey = values.platform || 'other';
+      var nicheKey = values.niche || '';
+      var baseCpm = platformCpm[platformKey] || platformCpm.other;
+      var nicheMultiplier = 1.0;
+      Object.keys(nicheMultipliers).some(function(key) {
+        if (nicheKey.indexOf(key) >= 0) {
+          nicheMultiplier = nicheMultipliers[key];
+          return true;
+        }
+        return false;
+      });
+
+      var engagementMultiplier = 1.0;
+      if (values.engagement !== null && !Number.isNaN(values.engagement)) {
+        if (values.engagement < 1) {
+          engagementMultiplier = 0.8;
+        } else if (values.engagement < 3) {
+          engagementMultiplier = 1.0;
+        } else if (values.engagement < 5) {
+          engagementMultiplier = 1.15;
+        } else {
+          engagementMultiplier = 1.3;
+        }
+      }
+
+      var geoMultiplier = 1.1;
+      var views = values.avgViews > 0 ? values.avgViews : 0;
+      if (!views && values.followers > 0) {
+        views = Math.round(values.followers * 0.1);
+      }
+
+      var effectiveCpm = baseCpm * nicheMultiplier * engagementMultiplier * geoMultiplier;
+      var centralPrice = views ? (views / 1000) * effectiveCpm : 0;
+      var band = priceBand(centralPrice, values.engagement);
+
+      return {
+        baseCpm: baseCpm,
+        nicheMultiplier: nicheMultiplier,
+        engagementMultiplier: engagementMultiplier,
+        geoMultiplier: geoMultiplier,
+        effectiveCpm: effectiveCpm,
+        views: views,
+        min: roundPrice(band[0]),
+        max: roundPrice(band[1]),
+        mid: roundPrice(centralPrice)
+      };
+    }
+
+    var rangeEl = document.getElementById('calc-range');
+    var midEl = document.getElementById('calc-mid');
+    var breakdownEl = document.getElementById('calc-breakdown');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      var platform = form.platform.value;
+      var niche = form.niche.value;
+      var followers = Number(form.followers.value);
+      var avgViews = Number(form.avg_views.value);
+      var engagement = Number(form.engagement_rate.value);
+
+      if (!platform || !niche || !Number.isFinite(followers) || followers <= 0) {
+        rangeEl.textContent = '$—';
+        midEl.textContent = 'Add your platform, niche, and follower count.';
+        breakdownEl.textContent = 'We need at least your platform, niche, and follower count to estimate a range.';
+        return;
+      }
+
+      var result = calculateRange({
+        platform: platform,
+        niche: niche,
+        followers: followers,
+        avgViews: Number.isFinite(avgViews) ? avgViews : 0,
+        engagement: Number.isFinite(engagement) ? engagement : 0
+      });
+
+      rangeEl.textContent = '$' + result.min.toLocaleString() + ' – $' + result.max.toLocaleString();
+      midEl.textContent = 'Suggested midpoint: $' + result.mid.toLocaleString() + ' (based on ' + result.views.toLocaleString() + ' avg views).';
+      breakdownEl.innerHTML =
+        'Base CPM: $' + result.baseCpm.toFixed(2) + '<br>' +
+        'Niche multiplier: ' + result.nicheMultiplier.toFixed(2) + '×<br>' +
+        'Engagement multiplier: ' + result.engagementMultiplier.toFixed(2) + '×<br>' +
+        'Geo multiplier: ' + result.geoMultiplier.toFixed(2) + '×<br>' +
+        'Effective CPM: $' + result.effectiveCpm.toFixed(2);
+    });
+  })();
+</script>
 {% endblock %}
 
 {% block footer %}

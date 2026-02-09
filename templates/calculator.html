@@ -67,7 +67,9 @@
         </select>
       </div>
       <button class="btn btn-primary" type="submit">Calculate my rate</button>
-      {% if is_free_plan %}
+      {% if not user %}
+        <p class="form-note">No signup required to calculate. <a href="/signup">Create a free account</a> to save your results and generate a media kit.</p>
+      {% elif is_free_plan %}
         <p class="form-note">Free plan: 3 calculations per month. <a href="/upgrade">Upgrade for unlimited access.</a></p>
       {% endif %}
     </form>
@@ -93,6 +95,31 @@
           <li>{{ community_note }}</li>
         {% endif %}
       </ul>
+      <script>
+        (function() {
+          if (window.__gaCalculatorUsedSent) return;
+          if (typeof window.gtag !== 'function') return;
+          var followers = Number('{{ followers or "" }}');
+          var bucket = 'unknown';
+          if (Number.isFinite(followers) && followers > 0) {
+            if (followers < 10000) {
+              bucket = '<10k';
+            } else if (followers < 100000) {
+              bucket = '10k-100k';
+            } else if (followers < 1000000) {
+              bucket = '100k-1M';
+            } else {
+              bucket = '>1M';
+            }
+          }
+          var accountType = '{{ platform or "" }}' || 'unknown';
+          window.__gaCalculatorUsedSent = true;
+          window.gtag('event', 'calculator_used', {
+            account_type: accountType,
+            follower_count_bucket: bucket
+          });
+        })();
+      </script>
     {% else %}
       <div class="empty-state">
         <p>Fill out your inputs to see your recommended rate range.</p>
